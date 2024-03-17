@@ -1,23 +1,20 @@
 {
-  "author": "Microsoft Corporation",
+  "name": "@vscode/loader",
+  "version": "1.0.0",
+  "description": "An universal AMD Loader",
+  "homepage": "https://github.com/microsoft/vscode-loader#readme",
   "bugs": {
     "url": "https://github.com/microsoft/vscode-loader/issues"
   },
-  "description": "An universal AMD Loader",
-  "devDependencies": {
-    "typescript": "4.9.5",
-    "yaserver": "0.4.0"
-  },
-  "directories": {
-    "test": "tests"
-  },
-  "homepage": "https://github.com/microsoft/vscode-loader#readme",
-  "license": "MIT",
-  "main": "index.js",
-  "name": "@vscode/loader",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/microsoft/vscode-loader.git"
+  },
+  "license": "MIT",
+  "author": "Microsoft Corporation",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
   },
   "scripts": {
     "compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
@@ -25,5 +22,8 @@
     "watch1": "tsc -w -p src/core/tsconfig.json",
     "watch2": "tsc -w -p tsconfig.json"
   },
-  "version": "1.0.0"
+  "devDependencies": {
+    "typescript": "4.9.5",
+    "yaserver": "0.4.0"
+  }
 }
