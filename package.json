@@ -1,30 +1,40 @@
 {
-  "name": "@vscode/loader",
-  "version": "1.0.0",
-  "description": "An universal AMD Loader",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "scripts": {
-    "watch1": "tsc -w -p src/core/tsconfig.json",
-    "watch2": "tsc -w -p tsconfig.json",
-    "compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
-    "test": "node ./tests/run-tests.js",
-    "simpleserver": "yaserver --root ./ --port 9999"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/microsoft/vscode-loader.git"
-  },
-  "author": "Microsoft Corporation",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/microsoft/vscode-loader/issues"
-  },
-  "homepage": "https://github.com/microsoft/vscode-loader#readme",
-  "devDependencies": {
-    "typescript": "5.4.2",
-    "yaserver": "0.4.0"
-  }
+	"name": "@vscode/loader",
+	"version": "0.0.1",
+	"private": false,
+	"description": "An universal AMD Loader",
+	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"bugs": {
+		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Playform",
+		"email": "Hello@Playform.Cloud",
+		"url": "https://playform.cloud"
+	},
+	"type": "module",
+	"main": "index.js",
+	"directories": {
+		"test": "tests"
+	},
+	"scripts": {
+		"compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
+		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"simpleserver": "yaserver --root ./ --port 9999",
+		"watch1": "tsc -w -p src/core/tsconfig.json",
+		"watch2": "tsc -w -p tsconfig.json"
+	},
+	"devDependencies": {
+		"typescript": "5.4.2",
+		"typescript-esbuild": "latest",
+		"yaserver": "0.4.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
