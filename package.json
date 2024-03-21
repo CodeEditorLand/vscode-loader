@@ -31,7 +31,7 @@
 	},
 	"devDependencies": {
 		"typescript": "5.4.2",
-		"typescript-esbuild": "latest",
+		"typescript-esbuild": "0.4.5",
 		"yaserver": "0.4.0"
 	},
 	"publishConfig": {
