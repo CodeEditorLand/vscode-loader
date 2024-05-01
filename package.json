@@ -36,7 +36,7 @@
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
-		"yaserver": "^0.4.0"
+		"yaserver": "0.4.0"
 	},
 	"publishConfig": {
 		"access": "public"
