@@ -3,19 +3,22 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "An universal AMD Loader",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"keywords": [
+		"land"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandLoader#readme",
 	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandLoader/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/CodeEditorLand/Foundation.git"
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandLoader.git"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"author": {
-		"name": "Playform",
-		"email": "Hello@Playform.Cloud",
-		"url": "https://playform.cloud"
+		"name": "🌆 — Land —",
+		"email": "Land@PlayForm.Cloud",
+		"url": "HTTPS://Land.PlayForm.Cloud"
 	},
 	"type": "module",
 	"main": "index.js",
@@ -23,15 +26,16 @@
 		"test": "tests"
 	},
 	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
 		"compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
-		"prepublishOnly": "TypeScriptESBuild 'Source/**/*.ts'",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"simpleserver": "yaserver --root ./ --port 9999",
 		"watch1": "tsc -w -p src/core/tsconfig.json",
 		"watch2": "tsc -w -p tsconfig.json"
 	},
 	"devDependencies": {
-		"typescript": "5.4.2",
-		"typescript-esbuild": "0.4.5",
+		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
 		"yaserver": "0.4.0"
 	},
 	"publishConfig": {
