@@ -9,5 +9,7 @@
 		"tests/qunit/qunit.d.ts",
 		"tests/loader.test.ts"
 	],
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules"
+	]
 }
