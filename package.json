@@ -1,30 +1,17 @@
 {
-  "name": "@vscode/loader",
-  "version": "1.0.0",
-  "description": "An universal AMD Loader",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "scripts": {
-    "watch1": "tsc -w -p src/core/tsconfig.json",
-    "watch2": "tsc -w -p tsconfig.json",
-    "compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
-    "test": "node ./tests/run-tests.js",
-    "simpleserver": "yaserver --root ./ --port 9999"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/microsoft/vscode-loader.git"
-  },
-  "author": "Microsoft Corporation",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/microsoft/vscode-loader/issues"
-  },
-  "homepage": "https://github.com/microsoft/vscode-loader#readme",
-  "devDependencies": {
-    "typescript": "^4.9.5",
-    "yaserver": "^0.4.0"
-  }
+	"name": "@vscode/loader",
+	"description": "An universal AMD Loader",
+	"main": "index.js",
+	"directories": {
+		"test": "tests"
+	},
+	"scripts": {
+		"compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
+		"simpleserver": "yaserver --root ./ --port 9999",
+		"watch1": "tsc -w -p src/core/tsconfig.json",
+		"watch2": "tsc -w -p tsconfig.json"
+	},
+	"devDependencies": {
+		"yaserver": "^0.4.0"
+	}
 }
