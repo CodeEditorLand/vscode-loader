@@ -12,6 +12,6 @@
 		"watch2": "tsc -w -p tsconfig.json"
 	},
 	"devDependencies": {
-		"yaserver": "^0.4.0"
+		"yaserver": "0.4.0"
 	}
 }
