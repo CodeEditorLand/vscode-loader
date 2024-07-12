@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"newLine": "LF",
+		"noUnusedLocals": false
+	},
+	"files": [
+		"src/loader.d.ts",
+		"tests/qunit/qunit.d.ts",
+		"tests/loader.test.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
