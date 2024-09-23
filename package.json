@@ -1,7 +1,7 @@
 {
 	"description": "An universal AMD Loader",
 	"devDependencies": {
-		"yaserver": "^0.4.0"
+		"yaserver": "0.4.0"
 	},
 	"directories": {
 		"test": "tests"
