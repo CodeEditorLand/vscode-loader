@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 namespace AMDLoader {
-
 	export const enum LoaderEventType {
 		LoaderAvailable = 1,
 
@@ -48,11 +47,23 @@ namespace AMDLoader {
 		private _events: LoaderEvent[];
 
 		constructor(loaderAvailableTimestamp: number) {
-			this._events = [new LoaderEvent(LoaderEventType.LoaderAvailable, '', loaderAvailableTimestamp)];
+			this._events = [
+				new LoaderEvent(
+					LoaderEventType.LoaderAvailable,
+					"",
+					loaderAvailableTimestamp,
+				),
+			];
 		}
 
 		public record(type: LoaderEventType, detail: string): void {
-			this._events.push(new LoaderEvent(type, detail, Utilities.getHighPerformanceTimestamp()));
+			this._events.push(
+				new LoaderEvent(
+					type,
+					detail,
+					Utilities.getHighPerformanceTimestamp(),
+				),
+			);
 		}
 
 		public getEvents(): LoaderEvent[] {
@@ -71,5 +82,4 @@ namespace AMDLoader {
 			return [];
 		}
 	}
-
 }

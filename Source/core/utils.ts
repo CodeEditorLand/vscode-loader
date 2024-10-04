@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 namespace AMDLoader {
-
 	export class Utilities {
 		/**
 		 * This method does not take care of / vs \
 		 */
-		public static fileUriToFilePath(isWindows: boolean, uri: string): string {
-			uri = decodeURI(uri).replace(/%23/g, '#');
+		public static fileUriToFilePath(
+			isWindows: boolean,
+			uri: string,
+		): string {
+			uri = decodeURI(uri).replace(/%23/g, "#");
 			if (isWindows) {
 				if (/^file:\/\/\//.test(uri)) {
 					// This is a URI without a hostname => return only the path segment
@@ -29,11 +31,17 @@ namespace AMDLoader {
 		}
 
 		public static startsWith(haystack: string, needle: string): boolean {
-			return haystack.length >= needle.length && haystack.substr(0, needle.length) === needle;
+			return (
+				haystack.length >= needle.length &&
+				haystack.substr(0, needle.length) === needle
+			);
 		}
 
 		public static endsWith(haystack: string, needle: string): boolean {
-			return haystack.length >= needle.length && haystack.substr(haystack.length - needle.length) === needle;
+			return (
+				haystack.length >= needle.length &&
+				haystack.substr(haystack.length - needle.length) === needle
+			);
 		}
 
 		// only check for "?" before "#" to ensure that there is a real Query-String
@@ -48,7 +56,10 @@ namespace AMDLoader {
 			return /^((http:\/\/)|(https:\/\/)|(file:\/\/)|(\/))/.test(url);
 		}
 
-		public static forEachProperty(obj: any, callback: (key: string, value: any) => void): void {
+		public static forEachProperty(
+			obj: any,
+			callback: (key: string, value: any) => void,
+		): void {
 			if (obj) {
 				let key: string;
 				for (key in obj) {
@@ -68,16 +79,19 @@ namespace AMDLoader {
 		}
 
 		public static recursiveClone(obj: any): any {
-			if (!obj || typeof obj !== 'object' || obj instanceof RegExp) {
+			if (!obj || typeof obj !== "object" || obj instanceof RegExp) {
 				return obj;
 			}
-			if (!Array.isArray(obj) && Object.getPrototypeOf(obj) !== Object.prototype) {
+			if (
+				!Array.isArray(obj) &&
+				Object.getPrototypeOf(obj) !== Object.prototype
+			) {
 				// only clone "simple" objects
 				return obj;
 			}
 			let result = Array.isArray(obj) ? [] : {};
 			Utilities.forEachProperty(obj, (key: string, value: any) => {
-				if (value && typeof value === 'object') {
+				if (value && typeof value === "object") {
 					result[key] = Utilities.recursiveClone(value);
 				} else {
 					result[key] = value;
@@ -86,15 +100,14 @@ namespace AMDLoader {
 			return result;
 		}
 
-
 		private static NEXT_ANONYMOUS_ID = 1;
 
 		public static generateAnonymousModule(): string {
-			return '===anonymous' + (Utilities.NEXT_ANONYMOUS_ID++) + '===';
+			return "===anonymous" + Utilities.NEXT_ANONYMOUS_ID++ + "===";
 		}
 
 		public static isAnonymousModule(id: string): boolean {
-			return Utilities.startsWith(id, '===anonymous');
+			return Utilities.startsWith(id, "===anonymous");
 		}
 
 		private static PERFORMANCE_NOW_PROBED = false;
@@ -103,9 +116,13 @@ namespace AMDLoader {
 		public static getHighPerformanceTimestamp(): number {
 			if (!this.PERFORMANCE_NOW_PROBED) {
 				this.PERFORMANCE_NOW_PROBED = true;
-				this.HAS_PERFORMANCE_NOW = (global.performance && typeof global.performance.now === 'function');
+				this.HAS_PERFORMANCE_NOW =
+					global.performance &&
+					typeof global.performance.now === "function";
 			}
-			return (this.HAS_PERFORMANCE_NOW ? global.performance.now() : Date.now());
+			return this.HAS_PERFORMANCE_NOW
+				? global.performance.now()
+				: Date.now();
 		}
 	}
 }

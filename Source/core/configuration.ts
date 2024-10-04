@@ -4,30 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 namespace AMDLoader {
-
 	export interface AnnotatedLoadingError extends Error {
-		phase: 'loading';
+		phase: "loading";
 		moduleId: string;
 		neededBy: string[];
 	}
 
 	export interface AnnotatedFactoryError extends Error {
-		phase: 'factory';
+		phase: "factory";
 		moduleId: string;
 		neededBy: string[];
 	}
 
 	export interface AnnotatedValidationError extends Error {
-		phase: 'configuration';
+		phase: "configuration";
 	}
 
-	export type AnnotatedError = AnnotatedLoadingError | AnnotatedFactoryError | AnnotatedValidationError;
+	export type AnnotatedError =
+		| AnnotatedLoadingError
+		| AnnotatedFactoryError
+		| AnnotatedValidationError;
 
 	export function ensureError<T extends Error>(err: any): T {
 		if (err instanceof Error) {
 			return <T>err;
 		}
-		const result = new Error(err.message || String(err) || 'Unknown Error');
+		const result = new Error(err.message || String(err) || "Unknown Error");
 		if (err.stack) {
 			result.stack = err.stack;
 		}
@@ -38,8 +40,8 @@ namespace AMDLoader {
 	 * The signature for the loader's AMD "define" function.
 	 */
 	export interface IDefineFunc {
-		(id: 'string', dependencies: string[], callback: any): void;
-		(id: 'string', callback: any): void;
+		(id: "string", dependencies: string[], callback: any): void;
+		(id: "string", callback: any): void;
 		(dependencies: string[], callback: any): void;
 		(callback: any): void;
 
@@ -55,7 +57,11 @@ namespace AMDLoader {
 		(module: string): any;
 		(config: any): void;
 		(modules: string[], callback: Function): void;
-		(modules: string[], callback: Function, errorback: (err: any) => void): void;
+		(
+			modules: string[],
+			callback: Function,
+			errorback: (err: any) => void,
+		): void;
 
 		config(params: IConfigurationOptions, shouldOverwrite?: boolean): void;
 
@@ -79,8 +85,8 @@ namespace AMDLoader {
 		/**
 		 * The define function
 		 */
-		define(id: 'string', dependencies: string[], callback: any): void;
-		define(id: 'string', callback: any): void;
+		define(id: "string", dependencies: string[], callback: any): void;
+		define(id: "string", callback: any): void;
 		define(dependencies: string[], callback: any): void;
 		define(callback: any): void;
 
@@ -111,7 +117,7 @@ namespace AMDLoader {
 		 * Optional delay for filesystem write/delete operations
 		 */
 		writeDelay?: number;
-	};
+	}
 
 	export interface IConfigurationOptions {
 		/**
@@ -125,7 +131,7 @@ namespace AMDLoader {
 		/**
 		 * Redirect rules for modules. The redirect rules will affect the module ids themselves
 		 */
-		paths?: { [path: string]: any; };
+		paths?: { [path: string]: any };
 		/**
 		 * Per-module configuration
 		 */
@@ -159,7 +165,7 @@ namespace AMDLoader {
 		 * Normally, during a build, no module factories are invoked. This can be used
 		 * to forcefully execute a module's factory.
 		 */
-		buildForceInvokeFactory?: { [moduleId: string]: boolean; }
+		buildForceInvokeFactory?: { [moduleId: string]: boolean };
 		/**
 		 * Content Security Policy nonce value used to load child scripts.
 		 */
@@ -191,15 +197,16 @@ namespace AMDLoader {
 		 */
 		nodeInstrumenter?: (source: string, vmScriptSrc: string) => string;
 		/**
-		* Support v8 cached data (http://v8project.blogspot.co.uk/2015/07/code-caching.html)
-		*/
-		nodeCachedData?: INodeCachedDataConfiguration
+		 * Support v8 cached data (http://v8project.blogspot.co.uk/2015/07/code-caching.html)
+		 */
+		nodeCachedData?: INodeCachedDataConfiguration;
 	}
 
-	export interface IValidatedConfigurationOptions extends IConfigurationOptions {
+	export interface IValidatedConfigurationOptions
+		extends IConfigurationOptions {
 		allowJsExtension: boolean;
 		baseUrl: string;
-		paths: { [path: string]: any; };
+		paths: { [path: string]: any };
 		config: { [moduleId: string]: IModuleConfiguration };
 		catchError: boolean;
 		recordStats: boolean;
@@ -212,82 +219,99 @@ namespace AMDLoader {
 	}
 
 	export class ConfigurationOptionsUtil {
-
 		/**
 		 * Ensure configuration options make sense
 		 */
-		private static validateConfigurationOptions(options: IConfigurationOptions): IValidatedConfigurationOptions {
-
+		private static validateConfigurationOptions(
+			options: IConfigurationOptions,
+		): IValidatedConfigurationOptions {
 			function defaultOnError(err: AnnotatedError): void {
-				if (err.phase === 'loading') {
+				if (err.phase === "loading") {
 					console.error('Loading "' + err.moduleId + '" failed');
 					console.error(err);
-					console.error('Here are the modules that depend on it:');
+					console.error("Here are the modules that depend on it:");
 					console.error(err.neededBy);
 					return;
 				}
 
-				if (err.phase === 'factory') {
-					console.error('The factory function of "' + err.moduleId + '" has thrown an exception');
+				if (err.phase === "factory") {
+					console.error(
+						'The factory function of "' +
+							err.moduleId +
+							'" has thrown an exception',
+					);
 					console.error(err);
-					console.error('Here are the modules that depend on it:');
+					console.error("Here are the modules that depend on it:");
 					console.error(err.neededBy);
 					return;
 				}
 			}
 
 			options = options || {};
-			if (typeof options.allowJsExtension !== 'boolean') {
+			if (typeof options.allowJsExtension !== "boolean") {
 				options.allowJsExtension = false;
 			}
-			if (typeof options.baseUrl !== 'string') {
-				options.baseUrl = '';
+			if (typeof options.baseUrl !== "string") {
+				options.baseUrl = "";
 			}
-			if (typeof options.isBuild !== 'boolean') {
+			if (typeof options.isBuild !== "boolean") {
 				options.isBuild = false;
 			}
-			if (typeof options.paths !== 'object') {
+			if (typeof options.paths !== "object") {
 				options.paths = {};
 			}
-			if (typeof options.config !== 'object') {
+			if (typeof options.config !== "object") {
 				options.config = {};
 			}
-			if (typeof options.catchError === 'undefined') {
+			if (typeof options.catchError === "undefined") {
 				options.catchError = false;
 			}
-			if (typeof options.recordStats === 'undefined') {
+			if (typeof options.recordStats === "undefined") {
 				options.recordStats = false;
 			}
-			if (typeof options.urlArgs !== 'string') {
-				options.urlArgs = '';
+			if (typeof options.urlArgs !== "string") {
+				options.urlArgs = "";
 			}
-			if (typeof options.onError !== 'function') {
+			if (typeof options.onError !== "function") {
 				options.onError = defaultOnError;
 			}
 			if (!Array.isArray(options.ignoreDuplicateModules)) {
 				options.ignoreDuplicateModules = [];
 			}
 			if (options.baseUrl.length > 0) {
-				if (!Utilities.endsWith(options.baseUrl, '/')) {
-					options.baseUrl += '/';
+				if (!Utilities.endsWith(options.baseUrl, "/")) {
+					options.baseUrl += "/";
 				}
 			}
-			if (typeof options.cspNonce !== 'string') {
-				options.cspNonce = '';
+			if (typeof options.cspNonce !== "string") {
+				options.cspNonce = "";
 			}
-			if (typeof options.preferScriptTags === 'undefined') {
+			if (typeof options.preferScriptTags === "undefined") {
 				options.preferScriptTags = false;
 			}
-			if (options.nodeCachedData && typeof options.nodeCachedData === 'object') {
-				if (typeof options.nodeCachedData.seed !== 'string') {
-					options.nodeCachedData.seed = 'seed';
+			if (
+				options.nodeCachedData &&
+				typeof options.nodeCachedData === "object"
+			) {
+				if (typeof options.nodeCachedData.seed !== "string") {
+					options.nodeCachedData.seed = "seed";
 				}
-				if (typeof options.nodeCachedData.writeDelay !== 'number' || options.nodeCachedData.writeDelay < 0) {
+				if (
+					typeof options.nodeCachedData.writeDelay !== "number" ||
+					options.nodeCachedData.writeDelay < 0
+				) {
 					options.nodeCachedData.writeDelay = 1000 * 7;
 				}
-				if (!options.nodeCachedData.path || typeof options.nodeCachedData.path !== 'string') {
-					const err = ensureError<AnnotatedValidationError>(new Error('INVALID cached data configuration, \'path\' MUST be set'));
-					err.phase = 'configuration';
+				if (
+					!options.nodeCachedData.path ||
+					typeof options.nodeCachedData.path !== "string"
+				) {
+					const err = ensureError<AnnotatedValidationError>(
+						new Error(
+							"INVALID cached data configuration, 'path' MUST be set",
+						),
+					);
+					err.phase = "configuration";
 					options.onError(err);
 					options.nodeCachedData = undefined;
 				}
@@ -296,28 +320,52 @@ namespace AMDLoader {
 			return <IValidatedConfigurationOptions>options;
 		}
 
-		public static mergeConfigurationOptions(overwrite: IConfigurationOptions | null = null, base: IConfigurationOptions | null = null): IValidatedConfigurationOptions {
-			let result: IConfigurationOptions = Utilities.recursiveClone(base || {});
+		public static mergeConfigurationOptions(
+			overwrite: IConfigurationOptions | null = null,
+			base: IConfigurationOptions | null = null,
+		): IValidatedConfigurationOptions {
+			let result: IConfigurationOptions = Utilities.recursiveClone(
+				base || {},
+			);
 
 			// Merge known properties and overwrite the unknown ones
 			Utilities.forEachProperty(overwrite, (key: string, value: any) => {
-				if (key === 'ignoreDuplicateModules' && typeof result.ignoreDuplicateModules !== 'undefined') {
-					result.ignoreDuplicateModules = result.ignoreDuplicateModules.concat(value);
-				} else if (key === 'paths' && typeof result.paths !== 'undefined') {
-					Utilities.forEachProperty(value, (key2: string, value2: any) => result.paths![key2] = value2);
-				} else if (key === 'config' && typeof result.config !== 'undefined') {
-					Utilities.forEachProperty(value, (key2: string, value2: any) => result.config![key2] = value2);
+				if (
+					key === "ignoreDuplicateModules" &&
+					typeof result.ignoreDuplicateModules !== "undefined"
+				) {
+					result.ignoreDuplicateModules =
+						result.ignoreDuplicateModules.concat(value);
+				} else if (
+					key === "paths" &&
+					typeof result.paths !== "undefined"
+				) {
+					Utilities.forEachProperty(
+						value,
+						(key2: string, value2: any) =>
+							(result.paths![key2] = value2),
+					);
+				} else if (
+					key === "config" &&
+					typeof result.config !== "undefined"
+				) {
+					Utilities.forEachProperty(
+						value,
+						(key2: string, value2: any) =>
+							(result.config![key2] = value2),
+					);
 				} else {
 					result[key] = Utilities.recursiveClone(value);
 				}
 			});
 
-			return ConfigurationOptionsUtil.validateConfigurationOptions(result);
+			return ConfigurationOptionsUtil.validateConfigurationOptions(
+				result,
+			);
 		}
 	}
 
 	export class Configuration {
-
 		private readonly _env: Environment;
 
 		private options: IValidatedConfigurationOptions;
@@ -325,25 +373,37 @@ namespace AMDLoader {
 		/**
 		 * Generated from the `ignoreDuplicateModules` configuration option.
 		 */
-		private ignoreDuplicateModulesMap: { [moduleId: string]: boolean; };
+		private ignoreDuplicateModulesMap: { [moduleId: string]: boolean };
 
 		/**
 		 * Generated from the `paths` configuration option. These are sorted with the longest `from` first.
 		 */
-		private sortedPathsRules: { from: string; to: string[]; }[];
+		private sortedPathsRules: { from: string; to: string[] }[];
 
 		constructor(env: Environment, options?: IConfigurationOptions) {
 			this._env = env;
-			this.options = ConfigurationOptionsUtil.mergeConfigurationOptions(options);
+			this.options =
+				ConfigurationOptionsUtil.mergeConfigurationOptions(options);
 
 			this._createIgnoreDuplicateModulesMap();
 			this._createSortedPathsRules();
 
-			if (this.options.baseUrl === '') {
-				if (this.options.nodeRequire && this.options.nodeRequire.main && this.options.nodeRequire.main.filename && this._env.isNode) {
+			if (this.options.baseUrl === "") {
+				if (
+					this.options.nodeRequire &&
+					this.options.nodeRequire.main &&
+					this.options.nodeRequire.main.filename &&
+					this._env.isNode
+				) {
 					let nodeMain = this.options.nodeRequire.main.filename;
-					let dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
-					this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
+					let dirnameIndex = Math.max(
+						nodeMain.lastIndexOf("/"),
+						nodeMain.lastIndexOf("\\"),
+					);
+					this.options.baseUrl = nodeMain.substring(
+						0,
+						dirnameIndex + 1,
+					);
 				}
 			}
 		}
@@ -351,8 +411,14 @@ namespace AMDLoader {
 		private _createIgnoreDuplicateModulesMap(): void {
 			// Build a map out of the ignoreDuplicateModules array
 			this.ignoreDuplicateModulesMap = {};
-			for (let i = 0; i < this.options.ignoreDuplicateModules.length; i++) {
-				this.ignoreDuplicateModulesMap[this.options.ignoreDuplicateModules[i]] = true;
+			for (
+				let i = 0;
+				i < this.options.ignoreDuplicateModules.length;
+				i++
+			) {
+				this.ignoreDuplicateModulesMap[
+					this.options.ignoreDuplicateModules[i]
+				] = true;
 			}
 		}
 
@@ -360,19 +426,22 @@ namespace AMDLoader {
 			// Create an array our of the paths rules, sorted descending by length to
 			// result in a more specific -> less specific order
 			this.sortedPathsRules = [];
-			Utilities.forEachProperty(this.options.paths, (from: string, to: any) => {
-				if (!Array.isArray(to)) {
-					this.sortedPathsRules.push({
-						from: from,
-						to: [to]
-					});
-				} else {
-					this.sortedPathsRules.push({
-						from: from,
-						to: to
-					});
-				}
-			});
+			Utilities.forEachProperty(
+				this.options.paths,
+				(from: string, to: any) => {
+					if (!Array.isArray(to)) {
+						this.sortedPathsRules.push({
+							from: from,
+							to: [to],
+						});
+					} else {
+						this.sortedPathsRules.push({
+							from: from,
+							to: to,
+						});
+					}
+				},
+			);
 			this.sortedPathsRules.sort((a, b) => {
 				return b.from.length - a.from.length;
 			});
@@ -384,7 +453,13 @@ namespace AMDLoader {
 		 * @result A new configuration
 		 */
 		public cloneAndMerge(options?: IConfigurationOptions): Configuration {
-			return new Configuration(this._env, ConfigurationOptionsUtil.mergeConfigurationOptions(options, this.options));
+			return new Configuration(
+				this._env,
+				ConfigurationOptionsUtil.mergeConfigurationOptions(
+					options,
+					this.options,
+				),
+			);
 		}
 
 		/**
@@ -395,13 +470,16 @@ namespace AMDLoader {
 		}
 
 		private _applyPaths(moduleId: string): string[] {
-			let pathRule: { from: string; to: string[]; };
+			let pathRule: { from: string; to: string[] };
 			for (let i = 0, len = this.sortedPathsRules.length; i < len; i++) {
 				pathRule = this.sortedPathsRules[i];
 				if (Utilities.startsWith(moduleId, pathRule.from)) {
 					let result: string[] = [];
 					for (let j = 0, lenJ = pathRule.to.length; j < lenJ; j++) {
-						result.push(pathRule.to[j] + moduleId.substr(pathRule.from.length));
+						result.push(
+							pathRule.to[j] +
+								moduleId.substr(pathRule.from.length),
+						);
 					}
 					return result;
 				}
@@ -411,9 +489,9 @@ namespace AMDLoader {
 
 		private _addUrlArgsToUrl(url: string): string {
 			if (Utilities.containsQueryString(url)) {
-				return url + '&' + this.options.urlArgs;
+				return url + "&" + this.options.urlArgs;
 			} else {
-				return url + '?' + this.options.urlArgs;
+				return url + "?" + this.options.urlArgs;
 			}
 		}
 
@@ -437,27 +515,27 @@ namespace AMDLoader {
 		 * Transform a module id to a location. Appends .js to module ids
 		 */
 		public moduleIdToPaths(moduleIdOrPath: string): string[] {
-
 			if (this._env.isNode) {
-				const isNodeModule = (
-					this.options.amdModulesPattern instanceof RegExp
-					&& !this.options.amdModulesPattern.test(moduleIdOrPath)
-				);
+				const isNodeModule =
+					this.options.amdModulesPattern instanceof RegExp &&
+					!this.options.amdModulesPattern.test(moduleIdOrPath);
 
 				if (isNodeModule) {
 					// This is a node module...
 					if (this.isBuild()) {
 						// ...and we are at build time, drop it
-						return ['empty:'];
+						return ["empty:"];
 					} else {
 						// ...and at runtime we create a `shortcut`-path
-						return ['node|' + moduleIdOrPath];
+						return ["node|" + moduleIdOrPath];
 					}
 				}
 			}
 
 			const isAbsolutePath = Utilities.isAbsolutePath(moduleIdOrPath);
-			const isJSFilePath = (this.options.allowJsExtension ? false : Utilities.endsWith(moduleIdOrPath, '.js'));
+			const isJSFilePath = this.options.allowJsExtension
+				? false
+				: Utilities.endsWith(moduleIdOrPath, ".js");
 			const isModuleId = !(isAbsolutePath || isJSFilePath);
 
 			let result = moduleIdOrPath;
@@ -466,7 +544,7 @@ namespace AMDLoader {
 				results = this._applyPaths(result);
 
 				for (let i = 0, len = results.length; i < len; i++) {
-					if (this.isBuild() && results[i] === 'empty:') {
+					if (this.isBuild() && results[i] === "empty:") {
 						continue;
 					}
 
@@ -474,13 +552,19 @@ namespace AMDLoader {
 						results[i] = this.options.baseUrl + results[i];
 					}
 
-					if (!Utilities.endsWith(results[i], '.js') && !Utilities.containsQueryString(results[i])) {
-						results[i] = results[i] + '.js';
+					if (
+						!Utilities.endsWith(results[i], ".js") &&
+						!Utilities.containsQueryString(results[i])
+					) {
+						results[i] = results[i] + ".js";
 					}
 				}
 			} else {
-				if (!Utilities.endsWith(result, '.js') && !Utilities.containsQueryString(result)) {
-					result = result + '.js';
+				if (
+					!Utilities.endsWith(result, ".js") &&
+					!Utilities.containsQueryString(result)
+				) {
+					result = result + ".js";
 				}
 				results = [result];
 			}
@@ -521,7 +605,10 @@ namespace AMDLoader {
 			if (Utilities.isAnonymousModule(strModuleId)) {
 				return true;
 			}
-			if (this.options.buildForceInvokeFactory && this.options.buildForceInvokeFactory[strModuleId]) {
+			if (
+				this.options.buildForceInvokeFactory &&
+				this.options.buildForceInvokeFactory[strModuleId]
+			) {
 				return true;
 			}
 			return false;
@@ -537,7 +624,9 @@ namespace AMDLoader {
 		/**
 		 * Get the configuration settings for the provided module id
 		 */
-		public getConfigForModule(moduleId: string): IModuleConfiguration | undefined {
+		public getConfigForModule(
+			moduleId: string,
+		): IModuleConfiguration | undefined {
 			if (this.options.config) {
 				return this.options.config[moduleId];
 			}

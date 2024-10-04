@@ -24,24 +24,23 @@ declare var process: {
 	platform: string;
 	type: string;
 	mainModule: string;
-	arch: string
+	arch: string;
 	argv: string[];
 	versions: {
 		node: string;
 		electron: string;
-	}
+	};
 };
 declare var require: {
 	nodeRequire(module: string): any;
 };
 declare var global: object;
-const _commonjsGlobal = typeof global === 'object' ? global : {};
+const _commonjsGlobal = typeof global === "object" ? global : {};
 
 namespace AMDLoader {
-	export const global: any = _amdLoaderGlobal
+	export const global: any = _amdLoaderGlobal;
 
 	export class Environment {
-
 		private _detected: boolean;
 		private _isWindows: boolean;
 		private _isNode: boolean;
@@ -85,20 +84,32 @@ namespace AMDLoader {
 			}
 			this._detected = true;
 			this._isWindows = Environment._isWindows();
-			this._isNode = (typeof module !== 'undefined' && !!module.exports);
-			this._isElectronRenderer = (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'renderer');
-			this._isWebWorker = (typeof global.importScripts === 'function');
-			this._isElectronNodeIntegrationWebWorker = this._isWebWorker && (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'worker');
+			this._isNode = typeof module !== "undefined" && !!module.exports;
+			this._isElectronRenderer =
+				typeof process !== "undefined" &&
+				typeof process.versions !== "undefined" &&
+				typeof process.versions.electron !== "undefined" &&
+				process.type === "renderer";
+			this._isWebWorker = typeof global.importScripts === "function";
+			this._isElectronNodeIntegrationWebWorker =
+				this._isWebWorker &&
+				typeof process !== "undefined" &&
+				typeof process.versions !== "undefined" &&
+				typeof process.versions.electron !== "undefined" &&
+				process.type === "worker";
 		}
 
 		private static _isWindows(): boolean {
-			if (typeof navigator !== 'undefined') {
-				if (navigator.userAgent && navigator.userAgent.indexOf('Windows') >= 0) {
+			if (typeof navigator !== "undefined") {
+				if (
+					navigator.userAgent &&
+					navigator.userAgent.indexOf("Windows") >= 0
+				) {
 					return true;
 				}
 			}
-			if (typeof process !== 'undefined') {
-				return (process.platform === 'win32');
+			if (typeof process !== "undefined") {
+				return process.platform === "win32";
 			}
 			return false;
 		}
