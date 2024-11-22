@@ -30,6 +30,7 @@ namespace AMDLoader {
 			return <T>err;
 		}
 		const result = new Error(err.message || String(err) || "Unknown Error");
+
 		if (err.stack) {
 			result.stack = err.stack;
 		}
@@ -208,6 +209,7 @@ namespace AMDLoader {
 		baseUrl: string;
 		paths: { [path: string]: any };
 		config: { [moduleId: string]: IModuleConfiguration };
+
 		catchError: boolean;
 		recordStats: boolean;
 		urlArgs: string;
@@ -231,6 +233,7 @@ namespace AMDLoader {
 					console.error(err);
 					console.error("Here are the modules that depend on it:");
 					console.error(err.neededBy);
+
 					return;
 				}
 
@@ -243,11 +246,13 @@ namespace AMDLoader {
 					console.error(err);
 					console.error("Here are the modules that depend on it:");
 					console.error(err.neededBy);
+
 					return;
 				}
 			}
 
 			options = options || {};
+
 			if (typeof options.allowJsExtension !== "boolean") {
 				options.allowJsExtension = false;
 			}
@@ -396,6 +401,7 @@ namespace AMDLoader {
 					this._env.isNode
 				) {
 					let nodeMain = this.options.nodeRequire.main.filename;
+
 					let dirnameIndex = Math.max(
 						nodeMain.lastIndexOf("/"),
 						nodeMain.lastIndexOf("\\"),
@@ -411,6 +417,7 @@ namespace AMDLoader {
 		private _createIgnoreDuplicateModulesMap(): void {
 			// Build a map out of the ignoreDuplicateModules array
 			this.ignoreDuplicateModulesMap = {};
+
 			for (
 				let i = 0;
 				i < this.options.ignoreDuplicateModules.length;
@@ -471,10 +478,13 @@ namespace AMDLoader {
 
 		private _applyPaths(moduleId: string): string[] {
 			let pathRule: { from: string; to: string[] };
+
 			for (let i = 0, len = this.sortedPathsRules.length; i < len; i++) {
 				pathRule = this.sortedPathsRules[i];
+
 				if (Utilities.startsWith(moduleId, pathRule.from)) {
 					let result: string[] = [];
+
 					for (let j = 0, lenJ = pathRule.to.length; j < lenJ; j++) {
 						result.push(
 							pathRule.to[j] +
@@ -533,13 +543,17 @@ namespace AMDLoader {
 			}
 
 			const isAbsolutePath = Utilities.isAbsolutePath(moduleIdOrPath);
+
 			const isJSFilePath = this.options.allowJsExtension
 				? false
 				: Utilities.endsWith(moduleIdOrPath, ".js");
+
 			const isModuleId = !(isAbsolutePath || isJSFilePath);
 
 			let result = moduleIdOrPath;
+
 			let results: string[];
+
 			if (isModuleId) {
 				results = this._applyPaths(result);
 

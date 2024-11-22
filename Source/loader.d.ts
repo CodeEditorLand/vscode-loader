@@ -20,6 +20,7 @@ declare var global: object;
 declare const _commonjsGlobal: object;
 declare namespace AMDLoader {
 	const global: any;
+
 	class Environment {
 		private _detected;
 		private _isWindows;
@@ -27,11 +28,17 @@ declare namespace AMDLoader {
 		private _isElectronRenderer;
 		private _isWebWorker;
 		private _isElectronNodeIntegrationWebWorker;
+
 		get isWindows(): boolean;
+
 		get isNode(): boolean;
+
 		get isElectronRenderer(): boolean;
+
 		get isWebWorker(): boolean;
+
 		get isElectronNodeIntegrationWebWorker(): boolean;
+
 		constructor();
 		private _detect;
 		private static _isWindows;
@@ -58,21 +65,26 @@ declare namespace AMDLoader {
 		type: LoaderEventType;
 		timestamp: number;
 		detail: string;
+
 		constructor(type: LoaderEventType, detail: string, timestamp: number);
 	}
 	interface ILoaderEventRecorder {
 		record(type: LoaderEventType, detail: string): void;
+
 		getEvents(): LoaderEvent[];
 	}
 	class LoaderEventRecorder implements ILoaderEventRecorder {
 		private _events;
+
 		constructor(loaderAvailableTimestamp: number);
 		record(type: LoaderEventType, detail: string): void;
+
 		getEvents(): LoaderEvent[];
 	}
 	class NullLoaderEventRecorder implements ILoaderEventRecorder {
 		static INSTANCE: NullLoaderEventRecorder;
 		record(type: LoaderEventType, detail: string): void;
+
 		getEvents(): LoaderEvent[];
 	}
 }
@@ -121,6 +133,7 @@ declare namespace AMDLoader {
 		| AnnotatedLoadingError
 		| AnnotatedFactoryError
 		| AnnotatedValidationError;
+
 	function ensureError<T extends Error>(err: any): T;
 	/**
 	 * The signature for the loader's AMD "define" function.
@@ -147,6 +160,7 @@ declare namespace AMDLoader {
 			errorback: (err: any) => void,
 		): void;
 		config(params: IConfigurationOptions, shouldOverwrite?: boolean): void;
+
 		getConfig(): IConfigurationOptions;
 		/**
 		 * Non standard extension to reset completely the loader state. This is used for running amdjs tests
@@ -289,6 +303,7 @@ declare namespace AMDLoader {
 		config: {
 			[moduleId: string]: IModuleConfiguration;
 		};
+
 		catchError: boolean;
 		recordStats: boolean;
 		urlArgs: string;
@@ -319,6 +334,7 @@ declare namespace AMDLoader {
 		 * Generated from the `paths` configuration option. These are sorted with the longest `from` first.
 		 */
 		private sortedPathsRules;
+
 		constructor(env: Environment, options?: IConfigurationOptions);
 		private _createIgnoreDuplicateModulesMap;
 		private _createSortedPathsRules;
@@ -374,12 +390,15 @@ declare namespace AMDLoader {
 declare namespace AMDLoader {
 	interface IModuleManager {
 		getGlobalAMDDefineFunc(): IDefineFunc;
+
 		getGlobalAMDRequireFunc(): IRequireFunc;
+
 		getConfig(): Configuration;
 		enqueueDefineAnonymousModule(
 			dependencies: string[],
 			callback: any,
 		): void;
+
 		getRecorder(): ILoaderEventRecorder;
 	}
 	interface IScriptLoader {
@@ -394,6 +413,7 @@ declare namespace AMDLoader {
 		recorder: ILoaderEventRecorder,
 		_nodeRequire: (nodeModule: string) => any,
 	): (nodeModule: string) => any;
+
 	function createScriptLoader(env: Environment): IScriptLoader;
 }
 declare namespace AMDLoader {
@@ -418,8 +438,10 @@ declare namespace AMDLoader {
 		): void;
 		(dependency: string): any;
 		toUrl(id: string): string;
+
 		getStats(): LoaderEvent[];
 		hasDependencyCycle(): boolean;
+
 		getChecksums(): {
 			[scriptSrc: string]: string;
 		};
@@ -431,17 +453,20 @@ declare namespace AMDLoader {
 	}
 	interface IPluginWriteCallback {
 		(contents: string): void;
+
 		getEntryPoint(): string;
 		asModule(moduleId: string, contents: string): void;
 	}
 	interface IPluginWriteFileCallback {
 		(filename: string, contents: string): void;
+
 		getEntryPoint(): string;
 		asModule(moduleId: string, contents: string): void;
 	}
 	class ModuleIdResolver {
 		static ROOT: ModuleIdResolver;
 		private fromModulePath;
+
 		constructor(fromModuleId: string);
 		/**
 		 * Normalize 'a/../name' to 'name', etc.
@@ -459,11 +484,14 @@ declare namespace AMDLoader {
 		private readonly _callback;
 		private readonly _errorback;
 		readonly moduleIdResolver: ModuleIdResolver | null;
+
 		exports: any;
 		error: AnnotatedError | null;
+
 		exportsPassedIn: boolean;
 		unresolvedDependenciesCount: number;
 		private _isComplete;
+
 		constructor(
 			id: ModuleId,
 			strId: string,
@@ -499,6 +527,7 @@ declare namespace AMDLoader {
 		defineLocation: IPosition | null;
 		dependencies: string[];
 		shim: string | null;
+
 		exports: any;
 	}
 	const enum ModuleId {
@@ -511,15 +540,18 @@ declare namespace AMDLoader {
 		static MODULE: RegularDependency;
 		static REQUIRE: RegularDependency;
 		readonly id: ModuleId;
+
 		constructor(id: ModuleId);
 	}
 	class PluginDependency {
 		readonly id: ModuleId;
 		readonly pluginId: ModuleId;
 		readonly pluginParam: string;
+
 		constructor(id: ModuleId, pluginId: ModuleId, pluginParam: string);
 	}
 	type Dependency = RegularDependency | PluginDependency;
+
 	class ModuleManager {
 		private readonly _env;
 		private readonly _scriptLoader;
@@ -558,6 +590,7 @@ declare namespace AMDLoader {
 		private _buildInfoPath;
 		private _buildInfoDefineStack;
 		private _buildInfoDependencies;
+
 		constructor(
 			env: Environment,
 			scriptLoader: IScriptLoader,
@@ -566,11 +599,16 @@ declare namespace AMDLoader {
 			loaderAvailableTimestamp?: number,
 		);
 		reset(): ModuleManager;
+
 		getGlobalAMDDefineFunc(): IDefineFunc;
+
 		getGlobalAMDRequireFunc(): IRequireFunc;
 		private static _findRelevantLocationInStack;
+
 		getBuildInfo(): IBuildModuleInfo[] | null;
+
 		getRecorder(): ILoaderEventRecorder;
+
 		getLoaderEvents(): LoaderEvent[];
 		/**
 		 * Defines an anonymous module (without an id). Its name will be resolved as we receive a callback from the scriptLoader.
@@ -611,6 +649,7 @@ declare namespace AMDLoader {
 			params: IConfigurationOptions,
 			shouldOverwrite: boolean,
 		): void;
+
 		getConfig(): Configuration;
 		/**
 		 * Callback from the scriptLoader when a module has been loaded.

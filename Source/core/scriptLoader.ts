@@ -6,12 +6,15 @@
 namespace AMDLoader {
 	export interface IModuleManager {
 		getGlobalAMDDefineFunc(): IDefineFunc;
+
 		getGlobalAMDRequireFunc(): IRequireFunc;
+
 		getConfig(): Configuration;
 		enqueueDefineAnonymousModule(
 			dependencies: string[],
 			callback: any,
 		): void;
+
 		getRecorder(): ILoaderEventRecorder;
 	}
 
@@ -71,6 +74,7 @@ namespace AMDLoader {
 					const { preferScriptTags } = moduleManager
 						.getConfig()
 						.getOptionsLiteral();
+
 					if (preferScriptTags) {
 						this._scriptLoader = new BrowserScriptLoader();
 					} else {
@@ -86,8 +90,10 @@ namespace AMDLoader {
 				callback: callback,
 				errorback: errorback,
 			};
+
 			if (this._callbackMap.hasOwnProperty(scriptSrc)) {
 				this._callbackMap[scriptSrc].push(scriptCallbacks);
+
 				return;
 			}
 			this._callbackMap[scriptSrc] = [scriptCallbacks];
@@ -155,17 +161,21 @@ namespace AMDLoader {
 		): void {
 			if (/^node\|/.test(scriptSrc)) {
 				let opts = moduleManager.getConfig().getOptionsLiteral();
+
 				let nodeRequire = ensureRecordedNodeRequire(
 					moduleManager.getRecorder(),
 					opts.nodeRequire || AMDLoader.global.nodeRequire,
 				);
+
 				let pieces = scriptSrc.split("|");
 
 				let moduleExports = null;
+
 				try {
 					moduleExports = nodeRequire(pieces[1]);
 				} catch (err) {
 					errorback(err);
+
 					return;
 				}
 
@@ -184,6 +194,7 @@ namespace AMDLoader {
 				const { trustedTypesPolicy } = moduleManager
 					.getConfig()
 					.getOptionsLiteral();
+
 				if (trustedTypesPolicy) {
 					scriptSrc = trustedTypesPolicy.createScriptURL(scriptSrc);
 				}
@@ -193,6 +204,7 @@ namespace AMDLoader {
 				const { cspNonce } = moduleManager
 					.getConfig()
 					.getOptionsLiteral();
+
 				if (cspNonce) {
 					script.setAttribute("nonce", cspNonce);
 				}
@@ -206,11 +218,13 @@ namespace AMDLoader {
 		const { trustedTypesPolicy } = moduleManager
 			.getConfig()
 			.getOptionsLiteral();
+
 		try {
 			const func = trustedTypesPolicy
 				? self.eval(trustedTypesPolicy.createScript("", "true"))
 				: new Function("true"); // CodeQL [SM01632] the loader is responsible with loading code, fetch + eval is used on the web worker instead of importScripts if possible because importScripts is synchronous and we observed deadlocks on Safari
 			func.call(self);
+
 			return true;
 		} catch (err) {
 			return false;
@@ -235,16 +249,21 @@ namespace AMDLoader {
 		): void {
 			if (/^node\|/.test(scriptSrc)) {
 				const opts = moduleManager.getConfig().getOptionsLiteral();
+
 				const nodeRequire = ensureRecordedNodeRequire(
 					moduleManager.getRecorder(),
 					opts.nodeRequire || AMDLoader.global.nodeRequire,
 				);
+
 				const pieces = scriptSrc.split("|");
+
 				let moduleExports = null;
+
 				try {
 					moduleExports = nodeRequire(pieces[1]);
 				} catch (err) {
 					errorback(err);
+
 					return;
 				}
 				moduleManager.enqueueDefineAnonymousModule([], function () {
@@ -259,6 +278,7 @@ namespace AMDLoader {
 				const isCrossOrigin =
 					/^((http:)|(https:)|(file:))/.test(scriptSrc) &&
 					scriptSrc.substring(0, self.origin.length) !== self.origin;
+
 				if (!isCrossOrigin && this._canUseEval(moduleManager)) {
 					// use `fetch` if possible because `importScripts`
 					// is synchronous and can lead to deadlocks on Safari
@@ -271,6 +291,7 @@ namespace AMDLoader {
 						})
 						.then((text) => {
 							text = `${text}\n//# sourceURL=${scriptSrc}`;
+
 							const func = trustedTypesPolicy
 								? self.eval(
 										trustedTypesPolicy.createScript(
@@ -283,6 +304,7 @@ namespace AMDLoader {
 							callback();
 						})
 						.then(undefined, errorback);
+
 					return;
 				}
 
@@ -414,6 +436,7 @@ namespace AMDLoader {
 			const { nodeCachedData } = moduleManager
 				.getConfig()
 				.getOptionsLiteral();
+
 			if (!nodeCachedData) {
 				return;
 			}
@@ -423,10 +446,12 @@ namespace AMDLoader {
 			this._didPatchNodeRequire = true;
 
 			const that = this;
+
 			const Module = nodeRequire("module");
 
 			function makeRequireFunction(mod: any) {
 				const Module = mod.constructor;
+
 				let require = <any>function require(path) {
 					try {
 						return mod.require(path);
@@ -448,6 +473,7 @@ namespace AMDLoader {
 				require.main = process.mainModule;
 				require.extensions = Module._extensions;
 				require.cache = Module._cache;
+
 				return require;
 			}
 
@@ -460,12 +486,16 @@ namespace AMDLoader {
 
 				// create script
 				const recorder = moduleManager.getRecorder();
+
 				const cachedDataPath = that._getCachedDataPath(
 					nodeCachedData,
 					filename,
 				);
+
 				const options: INodeVMScriptOptions = { filename };
+
 				let hashData: Buffer | undefined;
+
 				try {
 					const data = that._fs.readFileSync(cachedDataPath);
 					hashData = data.slice(0, 16);
@@ -481,11 +511,14 @@ namespace AMDLoader {
 					);
 				}
 				const script = new that._vm.Script(scriptSource, options);
+
 				const compileWrapper = script.runInThisContext(options);
 
 				// run script
 				const dirname = that._path.dirname(filename);
+
 				const require = makeRequireFunction(this);
+
 				const args = [
 					this.exports,
 					require,
@@ -496,6 +529,7 @@ namespace AMDLoader {
 					_commonjsGlobal,
 					Buffer,
 				];
+
 				const result = compileWrapper.apply(this.exports, args);
 
 				// cached data aftermath
@@ -525,10 +559,12 @@ namespace AMDLoader {
 			errorback: (err: any) => void,
 		): void {
 			const opts = moduleManager.getConfig().getOptionsLiteral();
+
 			const nodeRequire = ensureRecordedNodeRequire(
 				moduleManager.getRecorder(),
 				opts.nodeRequire || global.nodeRequire,
 			);
+
 			const nodeInstrumenter =
 				opts.nodeInstrumenter ||
 				function (c) {
@@ -536,16 +572,19 @@ namespace AMDLoader {
 				};
 			this._init(nodeRequire);
 			this._initNodeRequire(nodeRequire, moduleManager);
+
 			let recorder = moduleManager.getRecorder();
 
 			if (/^node\|/.test(scriptSrc)) {
 				let pieces = scriptSrc.split("|");
 
 				let moduleExports = null;
+
 				try {
 					moduleExports = nodeRequire(pieces[1]);
 				} catch (err) {
 					errorback(err);
+
 					return;
 				}
 
@@ -559,12 +598,16 @@ namespace AMDLoader {
 					this._env.isWindows,
 					scriptSrc,
 				);
+
 				const normalizedScriptSrc = this._path.normalize(scriptSrc);
+
 				const vmScriptPathOrUri =
 					this._getElectronRendererScriptPathOrUri(
 						normalizedScriptSrc,
 					);
+
 				const wantsCachedData = Boolean(opts.nodeCachedData);
+
 				const cachedDataPath = wantsCachedData
 					? this._getCachedDataPath(opts.nodeCachedData!, scriptSrc)
 					: undefined;
@@ -581,10 +624,12 @@ namespace AMDLoader {
 					) => {
 						if (err) {
 							errorback(err);
+
 							return;
 						}
 
 						let scriptSource: string;
+
 						if (data.charCodeAt(0) === NodeScriptLoader._BOM) {
 							scriptSource =
 								NodeScriptLoader._PREFIX +
@@ -601,10 +646,12 @@ namespace AMDLoader {
 							scriptSource,
 							normalizedScriptSrc,
 						);
+
 						const scriptOpts: INodeVMScriptOptions = {
 							filename: vmScriptPathOrUri,
 							cachedData,
 						};
+
 						const script = this._createAndEvalScript(
 							moduleManager,
 							scriptSource,
@@ -646,12 +693,16 @@ namespace AMDLoader {
 			);
 
 			const script = new this._vm.Script(contents, options);
+
 			const ret = script.runInThisContext(options);
 
 			const globalDefineFunc = moduleManager.getGlobalAMDDefineFunc();
+
 			let receivedDefineCall = false;
+
 			const localDefineFunc: IDefineFunc = <any>function () {
 				receivedDefineCall = true;
+
 				return globalDefineFunc.apply(null, arguments);
 			};
 			localDefineFunc.amd = globalDefineFunc.amd;
@@ -687,6 +738,7 @@ namespace AMDLoader {
 				return path;
 			}
 			let driveLetterMatch = path.match(/^([a-z])\:(.*)/i);
+
 			if (driveLetterMatch) {
 				// windows
 				return `file:///${(driveLetterMatch[1].toUpperCase() + ":" + driveLetterMatch[2]).replace(/\\/g, "/")}`;
@@ -706,7 +758,9 @@ namespace AMDLoader {
 				.update(config.seed!, "utf8")
 				.update(process.arch, "")
 				.digest("hex");
+
 			const basename = this._path.basename(filename).replace(/\.js$/, "");
+
 			return this._path.join(config.path, `${basename}-${hash}.code`);
 		}
 
@@ -732,6 +786,7 @@ namespace AMDLoader {
 						cachedDataPath,
 						moduleManager,
 					);
+
 					if (err) {
 						moduleManager.getConfig().onError(err);
 					}
@@ -762,8 +817,11 @@ namespace AMDLoader {
 					.writeDelay! *
 					(1 + Math.random()),
 			);
+
 			let lastSize: number = -1;
+
 			let iteration: number = 0;
+
 			let hashData: Buffer | undefined = undefined;
 
 			const createLoop = () => {
@@ -777,6 +835,7 @@ namespace AMDLoader {
 						}
 
 						const cachedData = script.createCachedData();
+
 						if (
 							cachedData.length === 0 ||
 							cachedData.length === lastSize ||
@@ -789,6 +848,7 @@ namespace AMDLoader {
 						if (cachedData.length < lastSize) {
 							// less data than before: skip, try again next round
 							createLoop();
+
 							return;
 						}
 
@@ -837,8 +897,11 @@ namespace AMDLoader {
 			} else {
 				// cached data case: read both files in parallel
 				let source: string | undefined = undefined;
+
 				let cachedData: Buffer | undefined = undefined;
+
 				let hashData: Buffer | undefined = undefined;
+
 				let steps = 2;
 
 				const step = (err?: any) => {
@@ -901,6 +964,7 @@ namespace AMDLoader {
 						.createHash("md5")
 						.update(scriptSource, "utf8")
 						.digest();
+
 					if (!hashData.equals(hashDataNow)) {
 						moduleManager
 							.getConfig()
@@ -934,6 +998,7 @@ namespace AMDLoader {
 
 		const nodeRequire = function nodeRequire(what) {
 			recorder.record(LoaderEventType.NodeBeginNativeRequire, what);
+
 			try {
 				return _nodeRequire(what);
 			} finally {
@@ -941,6 +1006,7 @@ namespace AMDLoader {
 			}
 		};
 		(<any>nodeRequire).__$__isRecorded = true;
+
 		return nodeRequire;
 	}
 

@@ -40,6 +40,7 @@ namespace AMDLoader {
 
 	export interface ILoaderEventRecorder {
 		record(type: LoaderEventType, detail: string): void;
+
 		getEvents(): LoaderEvent[];
 	}
 

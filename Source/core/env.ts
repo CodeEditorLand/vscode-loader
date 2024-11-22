@@ -35,6 +35,7 @@ declare var require: {
 	nodeRequire(module: string): any;
 };
 declare var global: object;
+
 const _commonjsGlobal = typeof global === "object" ? global : {};
 
 namespace AMDLoader {
@@ -50,22 +51,27 @@ namespace AMDLoader {
 
 		public get isWindows(): boolean {
 			this._detect();
+
 			return this._isWindows;
 		}
 		public get isNode(): boolean {
 			this._detect();
+
 			return this._isNode;
 		}
 		public get isElectronRenderer(): boolean {
 			this._detect();
+
 			return this._isElectronRenderer;
 		}
 		public get isWebWorker(): boolean {
 			this._detect();
+
 			return this._isWebWorker;
 		}
 		public get isElectronNodeIntegrationWebWorker(): boolean {
 			this._detect();
+
 			return this._isElectronNodeIntegrationWebWorker;
 		}
 

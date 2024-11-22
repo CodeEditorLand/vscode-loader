@@ -13,6 +13,7 @@ namespace AMDLoader {
 			uri: string,
 		): string {
 			uri = decodeURI(uri).replace(/%23/g, "#");
+
 			if (isWindows) {
 				if (/^file:\/\/\//.test(uri)) {
 					// This is a URI without a hostname => return only the path segment
@@ -62,6 +63,7 @@ namespace AMDLoader {
 		): void {
 			if (obj) {
 				let key: string;
+
 				for (key in obj) {
 					if (obj.hasOwnProperty(key)) {
 						callback(key, obj[key]);
@@ -75,6 +77,7 @@ namespace AMDLoader {
 			Utilities.forEachProperty(obj, () => {
 				isEmpty = false;
 			});
+
 			return isEmpty;
 		}
 
@@ -97,6 +100,7 @@ namespace AMDLoader {
 					result[key] = value;
 				}
 			});
+
 			return result;
 		}
 

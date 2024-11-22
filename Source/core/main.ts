@@ -59,6 +59,7 @@ namespace AMDLoader {
 	): void {
 		moduleManager.configure(params, shouldOverwrite);
 	};
+
 	const RequireFunc: IRequireFunc = <any>function () {
 		if (arguments.length === 1) {
 			if (
@@ -66,6 +67,7 @@ namespace AMDLoader {
 				!Array.isArray(arguments[0])
 			) {
 				_requireFunc_config(arguments[0]);
+
 				return;
 			}
 			if (typeof arguments[0] === "string") {
@@ -81,6 +83,7 @@ namespace AMDLoader {
 					arguments[2],
 					null,
 				);
+
 				return;
 			}
 		}
@@ -107,6 +110,7 @@ namespace AMDLoader {
 			typeof require !== "undefined"
 		) {
 			const _nodeRequire = global.require || require;
+
 			if (
 				typeof _nodeRequire === "function" &&
 				typeof _nodeRequire.resolve === "function"
