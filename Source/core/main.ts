@@ -19,16 +19,21 @@ namespace AMDLoader {
 		function (id: any, dependencies: any, callback: any): void {
 			if (typeof id !== "string") {
 				callback = dependencies;
+
 				dependencies = id;
+
 				id = null;
 			}
+
 			if (
 				typeof dependencies !== "object" ||
 				!Array.isArray(dependencies)
 			) {
 				callback = dependencies;
+
 				dependencies = null;
 			}
+
 			if (!dependencies) {
 				dependencies = ["require", "exports", "module"];
 			}
@@ -49,6 +54,7 @@ namespace AMDLoader {
 			}
 		}
 	);
+
 	DefineFunc.amd = {
 		jQuery: true,
 	};
@@ -70,10 +76,12 @@ namespace AMDLoader {
 
 				return;
 			}
+
 			if (typeof arguments[0] === "string") {
 				return moduleManager.synchronousRequire(arguments[0]);
 			}
 		}
+
 		if (arguments.length === 2 || arguments.length === 3) {
 			if (Array.isArray(arguments[0])) {
 				moduleManager.defineModule(
@@ -87,21 +95,28 @@ namespace AMDLoader {
 				return;
 			}
 		}
+
 		throw new Error("Unrecognized require call");
 	};
+
 	RequireFunc.config = _requireFunc_config;
+
 	RequireFunc.getConfig = function (): IConfigurationOptions {
 		return moduleManager.getConfig().getOptionsLiteral();
 	};
+
 	RequireFunc.reset = function (): void {
 		moduleManager = moduleManager.reset();
 	};
+
 	RequireFunc.getBuildInfo = function (): IBuildModuleInfo[] | null {
 		return moduleManager.getBuildInfo();
 	};
+
 	RequireFunc.getStats = function (): LoaderEvent[] {
 		return moduleManager.getLoaderEvents();
 	};
+
 	RequireFunc.define = DefineFunc;
 
 	export function init(): void {
@@ -120,6 +135,7 @@ namespace AMDLoader {
 					moduleManager.getRecorder(),
 					_nodeRequire,
 				);
+
 				global.nodeRequire = nodeRequire;
 				(<any>RequireFunc).nodeRequire = nodeRequire;
 				(<any>RequireFunc).__$__nodeRequire = nodeRequire;
@@ -136,6 +152,7 @@ namespace AMDLoader {
 			if (!env.isElectronRenderer) {
 				global.define = DefineFunc;
 			}
+
 			global.require = RequireFunc;
 		}
 	}
@@ -161,6 +178,7 @@ namespace AMDLoader {
 		define = function () {
 			return DefineFunc.apply(null, arguments);
 		};
+
 		define.amd = DefineFunc.amd;
 
 		if (typeof doNotInitLoader === "undefined") {

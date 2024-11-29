@@ -4,12 +4,18 @@ declare var module: {
 };
 declare var process: {
 	platform: string;
+
 	type: string;
+
 	mainModule: string;
+
 	arch: string;
+
 	argv: string[];
+
 	versions: {
 		node: string;
+
 		electron: string;
 	};
 };
@@ -23,10 +29,15 @@ declare namespace AMDLoader {
 
 	class Environment {
 		private _detected;
+
 		private _isWindows;
+
 		private _isNode;
+
 		private _isElectronRenderer;
+
 		private _isWebWorker;
+
 		private _isElectronNodeIntegrationWebWorker;
 
 		get isWindows(): boolean;
@@ -40,7 +51,9 @@ declare namespace AMDLoader {
 		get isElectronNodeIntegrationWebWorker(): boolean;
 
 		constructor();
+
 		private _detect;
+
 		private static _isWindows;
 	}
 }
@@ -61,28 +74,36 @@ declare namespace AMDLoader {
 		CachedDataRejected = 62,
 		CachedDataCreated = 63,
 	}
+
 	class LoaderEvent {
 		type: LoaderEventType;
+
 		timestamp: number;
+
 		detail: string;
 
 		constructor(type: LoaderEventType, detail: string, timestamp: number);
 	}
+
 	interface ILoaderEventRecorder {
 		record(type: LoaderEventType, detail: string): void;
 
 		getEvents(): LoaderEvent[];
 	}
+
 	class LoaderEventRecorder implements ILoaderEventRecorder {
 		private _events;
 
 		constructor(loaderAvailableTimestamp: number);
+
 		record(type: LoaderEventType, detail: string): void;
 
 		getEvents(): LoaderEvent[];
 	}
+
 	class NullLoaderEventRecorder implements ILoaderEventRecorder {
 		static INSTANCE: NullLoaderEventRecorder;
+
 		record(type: LoaderEventType, detail: string): void;
 
 		getEvents(): LoaderEvent[];
@@ -94,41 +115,60 @@ declare namespace AMDLoader {
 		 * This method does not take care of / vs \
 		 */
 		static fileUriToFilePath(isWindows: boolean, uri: string): string;
+
 		static startsWith(haystack: string, needle: string): boolean;
+
 		static endsWith(haystack: string, needle: string): boolean;
+
 		static containsQueryString(url: string): boolean;
 		/**
 		 * Does `url` start with http:// or https:// or file:// or / ?
 		 */
 		static isAbsolutePath(url: string): boolean;
+
 		static forEachProperty(
 			obj: any,
 			callback: (key: string, value: any) => void,
 		): void;
+
 		static isEmpty(obj: any): boolean;
+
 		static recursiveClone(obj: any): any;
+
 		private static NEXT_ANONYMOUS_ID;
+
 		static generateAnonymousModule(): string;
+
 		static isAnonymousModule(id: string): boolean;
+
 		private static PERFORMANCE_NOW_PROBED;
+
 		private static HAS_PERFORMANCE_NOW;
+
 		static getHighPerformanceTimestamp(): number;
 	}
 }
 declare namespace AMDLoader {
 	interface AnnotatedLoadingError extends Error {
 		phase: "loading";
+
 		moduleId: string;
+
 		neededBy: string[];
 	}
+
 	interface AnnotatedFactoryError extends Error {
 		phase: "factory";
+
 		moduleId: string;
+
 		neededBy: string[];
 	}
+
 	interface AnnotatedValidationError extends Error {
 		phase: "configuration";
 	}
+
 	type AnnotatedError =
 		| AnnotatedLoadingError
 		| AnnotatedFactoryError
@@ -143,6 +183,7 @@ declare namespace AMDLoader {
 		(id: "string", callback: any): void;
 		(dependencies: string[], callback: any): void;
 		(callback: any): void;
+
 		amd: {
 			jQuery: boolean;
 		};
@@ -159,6 +200,7 @@ declare namespace AMDLoader {
 			callback: Function,
 			errorback: (err: any) => void,
 		): void;
+
 		config(params: IConfigurationOptions, shouldOverwrite?: boolean): void;
 
 		getConfig(): IConfigurationOptions;
@@ -178,20 +220,28 @@ declare namespace AMDLoader {
 		 * The define function
 		 */
 		define(id: "string", dependencies: string[], callback: any): void;
+
 		define(id: "string", callback: any): void;
+
 		define(dependencies: string[], callback: any): void;
+
 		define(callback: any): void;
+
 		moduleManager?: ModuleManager;
 	}
+
 	interface IModuleConfiguration {
 		[key: string]: any;
 	}
+
 	interface INodeRequire {
 		(nodeModule: string): any;
+
 		main: {
 			filename: string;
 		};
 	}
+
 	interface INodeCachedDataConfiguration {
 		/**
 		 * Directory path in which cached is stored.
@@ -206,6 +256,7 @@ declare namespace AMDLoader {
 		 */
 		writeDelay?: number;
 	}
+
 	interface IConfigurationOptions {
 		/**
 		 * Allow module ids to end with .js
@@ -274,6 +325,7 @@ declare namespace AMDLoader {
 		 */
 		trustedTypesPolicy?: {
 			createScriptURL(value: string): string & object;
+
 			createScript(_: string, value: string): string;
 		};
 		/**
@@ -294,37 +346,52 @@ declare namespace AMDLoader {
 		 */
 		nodeCachedData?: INodeCachedDataConfiguration;
 	}
+
 	interface IValidatedConfigurationOptions extends IConfigurationOptions {
 		allowJsExtension: boolean;
+
 		baseUrl: string;
+
 		paths: {
 			[path: string]: any;
 		};
+
 		config: {
 			[moduleId: string]: IModuleConfiguration;
 		};
 
 		catchError: boolean;
+
 		recordStats: boolean;
+
 		urlArgs: string;
+
 		onError: (err: AnnotatedError) => void;
+
 		ignoreDuplicateModules: string[];
+
 		isBuild: boolean;
+
 		cspNonce: string;
+
 		preferScriptTags: boolean;
 	}
+
 	class ConfigurationOptionsUtil {
 		/**
 		 * Ensure configuration options make sense
 		 */
 		private static validateConfigurationOptions;
+
 		static mergeConfigurationOptions(
 			overwrite?: IConfigurationOptions | null,
 			base?: IConfigurationOptions | null,
 		): IValidatedConfigurationOptions;
 	}
+
 	class Configuration {
 		private readonly _env;
+
 		private options;
 		/**
 		 * Generated from the `ignoreDuplicateModules` configuration option.
@@ -336,7 +403,9 @@ declare namespace AMDLoader {
 		private sortedPathsRules;
 
 		constructor(env: Environment, options?: IConfigurationOptions);
+
 		private _createIgnoreDuplicateModulesMap;
+
 		private _createSortedPathsRules;
 		/**
 		 * Clone current configuration and overwrite options selectively.
@@ -348,9 +417,13 @@ declare namespace AMDLoader {
 		 * Get current options bag. Useful for passing it forward to plugins.
 		 */
 		getOptionsLiteral(): IValidatedConfigurationOptions;
+
 		private _applyPaths;
+
 		private _addUrlArgsToUrl;
+
 		private _addUrlArgsIfNecessaryToUrl;
+
 		private _addUrlArgsIfNecessaryToUrls;
 		/**
 		 * Transform a module id to a location. Appends .js to module ids
@@ -364,6 +437,7 @@ declare namespace AMDLoader {
 		 * Flag to indicate if current execution is as part of a build.
 		 */
 		isBuild(): boolean;
+
 		shouldInvokeFactory(strModuleId: string): boolean;
 		/**
 		 * Test if module `moduleId` is expected to be defined multiple times
@@ -394,6 +468,7 @@ declare namespace AMDLoader {
 		getGlobalAMDRequireFunc(): IRequireFunc;
 
 		getConfig(): Configuration;
+
 		enqueueDefineAnonymousModule(
 			dependencies: string[],
 			callback: any,
@@ -401,6 +476,7 @@ declare namespace AMDLoader {
 
 		getRecorder(): ILoaderEventRecorder;
 	}
+
 	interface IScriptLoader {
 		load(
 			moduleManager: IModuleManager,
@@ -409,6 +485,7 @@ declare namespace AMDLoader {
 			errorCallback: (err: any) => void,
 		): void;
 	}
+
 	function ensureRecordedNodeRequire(
 		recorder: ILoaderEventRecorder,
 		_nodeRequire: (nodeModule: string) => any,
@@ -425,11 +502,15 @@ declare namespace AMDLoader {
 			options: IConfigurationOptions,
 		) => void;
 	}
+
 	interface IDefineCall {
 		stack: string | null;
+
 		dependencies: string[];
+
 		callback: any;
 	}
+
 	interface IRelativeRequire {
 		(
 			dependencies: string[],
@@ -437,34 +518,45 @@ declare namespace AMDLoader {
 			errorback?: (error: Error) => void,
 		): void;
 		(dependency: string): any;
+
 		toUrl(id: string): string;
 
 		getStats(): LoaderEvent[];
+
 		hasDependencyCycle(): boolean;
 
 		getChecksums(): {
 			[scriptSrc: string]: string;
 		};
+
 		config(params: IConfigurationOptions, shouldOverwrite?: boolean): void;
 	}
+
 	interface IPluginLoadCallback {
 		(value: any): void;
+
 		error(err: any): void;
 	}
+
 	interface IPluginWriteCallback {
 		(contents: string): void;
 
 		getEntryPoint(): string;
+
 		asModule(moduleId: string, contents: string): void;
 	}
+
 	interface IPluginWriteFileCallback {
 		(filename: string, contents: string): void;
 
 		getEntryPoint(): string;
+
 		asModule(moduleId: string, contents: string): void;
 	}
+
 	class ModuleIdResolver {
 		static ROOT: ModuleIdResolver;
+
 		private fromModulePath;
 
 		constructor(fromModuleId: string);
@@ -477,19 +569,28 @@ declare namespace AMDLoader {
 		 */
 		resolveModule(moduleId: string): string;
 	}
+
 	class Module {
 		readonly id: ModuleId;
+
 		readonly strId: string;
+
 		readonly dependencies: Dependency[] | null;
+
 		private readonly _callback;
+
 		private readonly _errorback;
+
 		readonly moduleIdResolver: ModuleIdResolver | null;
 
 		exports: any;
+
 		error: AnnotatedError | null;
 
 		exportsPassedIn: boolean;
+
 		unresolvedDependenciesCount: number;
+
 		private _isComplete;
 
 		constructor(
@@ -500,8 +601,11 @@ declare namespace AMDLoader {
 			errorback: ((err: AnnotatedError) => void) | null | undefined,
 			moduleIdResolver: ModuleIdResolver | null,
 		);
+
 		private static _safeInvokeFunction;
+
 		private static _invokeFactory;
+
 		complete(
 			recorder: ILoaderEventRecorder,
 			config: Configuration,
@@ -517,49 +621,72 @@ declare namespace AMDLoader {
 		 */
 		isComplete(): boolean;
 	}
+
 	interface IPosition {
 		line: number;
+
 		col: number;
 	}
+
 	interface IBuildModuleInfo {
 		id: string;
+
 		path: string | null;
+
 		defineLocation: IPosition | null;
+
 		dependencies: string[];
+
 		shim: string | null;
 
 		exports: any;
 	}
+
 	const enum ModuleId {
 		EXPORTS = 0,
 		MODULE = 1,
 		REQUIRE = 2,
 	}
+
 	class RegularDependency {
 		static EXPORTS: RegularDependency;
+
 		static MODULE: RegularDependency;
+
 		static REQUIRE: RegularDependency;
+
 		readonly id: ModuleId;
 
 		constructor(id: ModuleId);
 	}
+
 	class PluginDependency {
 		readonly id: ModuleId;
+
 		readonly pluginId: ModuleId;
+
 		readonly pluginParam: string;
 
 		constructor(id: ModuleId, pluginId: ModuleId, pluginParam: string);
 	}
+
 	type Dependency = RegularDependency | PluginDependency;
 
 	class ModuleManager {
 		private readonly _env;
+
 		private readonly _scriptLoader;
+
 		private readonly _loaderAvailableTimestamp;
+
 		private readonly _defineFunc;
+
 		private readonly _requireFunc;
+
 		private _moduleIdProvider;
+
 		private _config;
+
 		private _hasDependencyCycle;
 		/**
 		 * map of module id => module.
@@ -586,9 +713,13 @@ declare namespace AMDLoader {
 		 * current annonymous received define call, but not yet processed
 		 */
 		private _currentAnonymousDefineCall;
+
 		private _recorder;
+
 		private _buildInfoPath;
+
 		private _buildInfoDefineStack;
+
 		private _buildInfoDependencies;
 
 		constructor(
@@ -598,11 +729,13 @@ declare namespace AMDLoader {
 			requireFunc: IRequireFunc | null,
 			loaderAvailableTimestamp?: number,
 		);
+
 		reset(): ModuleManager;
 
 		getGlobalAMDDefineFunc(): IDefineFunc;
 
 		getGlobalAMDRequireFunc(): IRequireFunc;
+
 		private static _findRelevantLocationInStack;
 
 		getBuildInfo(): IBuildModuleInfo[] | null;
@@ -633,8 +766,11 @@ declare namespace AMDLoader {
 			stack: string | null,
 			moduleIdResolver?: ModuleIdResolver,
 		): void;
+
 		private _normalizeDependency;
+
 		private _normalizeDependencies;
+
 		private _relativeRequire;
 		/**
 		 * Require synchronously a module by its absolute id. If the module is not loaded, an exception will be thrown.
@@ -645,6 +781,7 @@ declare namespace AMDLoader {
 			_strModuleId: string,
 			moduleIdResolver?: ModuleIdResolver,
 		): any;
+
 		configure(
 			params: IConfigurationOptions,
 			shouldOverwrite: boolean,
@@ -656,6 +793,7 @@ declare namespace AMDLoader {
 		 * This means its code is available and has been executed.
 		 */
 		private _onLoad;
+
 		private _createLoadError;
 		/**
 		 * Callback from the scriptLoader when a module hasn't been loaded.
@@ -680,6 +818,7 @@ declare namespace AMDLoader {
 		 * Create the local 'require' that is passed into modules
 		 */
 		private _createRequire;
+
 		private _loadModule;
 		/**
 		 * Resolve a plugin dependency with the plugin loaded & complete
@@ -692,6 +831,7 @@ declare namespace AMDLoader {
 		 * Examine the dependencies of module 'module' and resolve them as needed.
 		 */
 		private _resolve;
+
 		private _onModuleComplete;
 	}
 }

@@ -19,6 +19,7 @@ namespace AMDLoader {
 					// This is a URI without a hostname => return only the path segment
 					return uri.substr(8);
 				}
+
 				if (/^file:\/\//.test(uri)) {
 					return uri.substr(5);
 				}
@@ -74,6 +75,7 @@ namespace AMDLoader {
 
 		public static isEmpty(obj: any): boolean {
 			let isEmpty = true;
+
 			Utilities.forEachProperty(obj, () => {
 				isEmpty = false;
 			});
@@ -85,6 +87,7 @@ namespace AMDLoader {
 			if (!obj || typeof obj !== "object" || obj instanceof RegExp) {
 				return obj;
 			}
+
 			if (
 				!Array.isArray(obj) &&
 				Object.getPrototypeOf(obj) !== Object.prototype
@@ -92,7 +95,9 @@ namespace AMDLoader {
 				// only clone "simple" objects
 				return obj;
 			}
+
 			let result = Array.isArray(obj) ? [] : {};
+
 			Utilities.forEachProperty(obj, (key: string, value: any) => {
 				if (value && typeof value === "object") {
 					result[key] = Utilities.recursiveClone(value);
@@ -115,15 +120,18 @@ namespace AMDLoader {
 		}
 
 		private static PERFORMANCE_NOW_PROBED = false;
+
 		private static HAS_PERFORMANCE_NOW = false;
 
 		public static getHighPerformanceTimestamp(): number {
 			if (!this.PERFORMANCE_NOW_PROBED) {
 				this.PERFORMANCE_NOW_PROBED = true;
+
 				this.HAS_PERFORMANCE_NOW =
 					global.performance &&
 					typeof global.performance.now === "function";
 			}
+
 			return this.HAS_PERFORMANCE_NOW
 				? global.performance.now()
 				: Date.now();

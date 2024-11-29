@@ -6,13 +6,17 @@
 namespace AMDLoader {
 	export interface AnnotatedLoadingError extends Error {
 		phase: "loading";
+
 		moduleId: string;
+
 		neededBy: string[];
 	}
 
 	export interface AnnotatedFactoryError extends Error {
 		phase: "factory";
+
 		moduleId: string;
+
 		neededBy: string[];
 	}
 
@@ -29,11 +33,13 @@ namespace AMDLoader {
 		if (err instanceof Error) {
 			return <T>err;
 		}
+
 		const result = new Error(err.message || String(err) || "Unknown Error");
 
 		if (err.stack) {
 			result.stack = err.stack;
 		}
+
 		return <T>result;
 	}
 
@@ -87,8 +93,11 @@ namespace AMDLoader {
 		 * The define function
 		 */
 		define(id: "string", dependencies: string[], callback: any): void;
+
 		define(id: "string", callback: any): void;
+
 		define(dependencies: string[], callback: any): void;
+
 		define(callback: any): void;
 
 		moduleManager?: ModuleManager;
@@ -100,6 +109,7 @@ namespace AMDLoader {
 
 	export interface INodeRequire {
 		(nodeModule: string): any;
+
 		main: {
 			filename: string;
 		};
@@ -182,6 +192,7 @@ namespace AMDLoader {
 		 */
 		trustedTypesPolicy?: {
 			createScriptURL(value: string): string & object;
+
 			createScript(_: string, value: string): string;
 		};
 		/**
@@ -206,17 +217,27 @@ namespace AMDLoader {
 	export interface IValidatedConfigurationOptions
 		extends IConfigurationOptions {
 		allowJsExtension: boolean;
+
 		baseUrl: string;
+
 		paths: { [path: string]: any };
+
 		config: { [moduleId: string]: IModuleConfiguration };
 
 		catchError: boolean;
+
 		recordStats: boolean;
+
 		urlArgs: string;
+
 		onError: (err: AnnotatedError) => void;
+
 		ignoreDuplicateModules: string[];
+
 		isBuild: boolean;
+
 		cspNonce: string;
+
 		preferScriptTags: boolean;
 	}
 
@@ -230,8 +251,11 @@ namespace AMDLoader {
 			function defaultOnError(err: AnnotatedError): void {
 				if (err.phase === "loading") {
 					console.error('Loading "' + err.moduleId + '" failed');
+
 					console.error(err);
+
 					console.error("Here are the modules that depend on it:");
+
 					console.error(err.neededBy);
 
 					return;
@@ -243,8 +267,11 @@ namespace AMDLoader {
 							err.moduleId +
 							'" has thrown an exception',
 					);
+
 					console.error(err);
+
 					console.error("Here are the modules that depend on it:");
+
 					console.error(err.neededBy);
 
 					return;
@@ -256,44 +283,57 @@ namespace AMDLoader {
 			if (typeof options.allowJsExtension !== "boolean") {
 				options.allowJsExtension = false;
 			}
+
 			if (typeof options.baseUrl !== "string") {
 				options.baseUrl = "";
 			}
+
 			if (typeof options.isBuild !== "boolean") {
 				options.isBuild = false;
 			}
+
 			if (typeof options.paths !== "object") {
 				options.paths = {};
 			}
+
 			if (typeof options.config !== "object") {
 				options.config = {};
 			}
+
 			if (typeof options.catchError === "undefined") {
 				options.catchError = false;
 			}
+
 			if (typeof options.recordStats === "undefined") {
 				options.recordStats = false;
 			}
+
 			if (typeof options.urlArgs !== "string") {
 				options.urlArgs = "";
 			}
+
 			if (typeof options.onError !== "function") {
 				options.onError = defaultOnError;
 			}
+
 			if (!Array.isArray(options.ignoreDuplicateModules)) {
 				options.ignoreDuplicateModules = [];
 			}
+
 			if (options.baseUrl.length > 0) {
 				if (!Utilities.endsWith(options.baseUrl, "/")) {
 					options.baseUrl += "/";
 				}
 			}
+
 			if (typeof options.cspNonce !== "string") {
 				options.cspNonce = "";
 			}
+
 			if (typeof options.preferScriptTags === "undefined") {
 				options.preferScriptTags = false;
 			}
+
 			if (
 				options.nodeCachedData &&
 				typeof options.nodeCachedData === "object"
@@ -301,12 +341,14 @@ namespace AMDLoader {
 				if (typeof options.nodeCachedData.seed !== "string") {
 					options.nodeCachedData.seed = "seed";
 				}
+
 				if (
 					typeof options.nodeCachedData.writeDelay !== "number" ||
 					options.nodeCachedData.writeDelay < 0
 				) {
 					options.nodeCachedData.writeDelay = 1000 * 7;
 				}
+
 				if (
 					!options.nodeCachedData.path ||
 					typeof options.nodeCachedData.path !== "string"
@@ -316,8 +358,11 @@ namespace AMDLoader {
 							"INVALID cached data configuration, 'path' MUST be set",
 						),
 					);
+
 					err.phase = "configuration";
+
 					options.onError(err);
+
 					options.nodeCachedData = undefined;
 				}
 			}
@@ -387,10 +432,12 @@ namespace AMDLoader {
 
 		constructor(env: Environment, options?: IConfigurationOptions) {
 			this._env = env;
+
 			this.options =
 				ConfigurationOptionsUtil.mergeConfigurationOptions(options);
 
 			this._createIgnoreDuplicateModulesMap();
+
 			this._createSortedPathsRules();
 
 			if (this.options.baseUrl === "") {
@@ -406,6 +453,7 @@ namespace AMDLoader {
 						nodeMain.lastIndexOf("/"),
 						nodeMain.lastIndexOf("\\"),
 					);
+
 					this.options.baseUrl = nodeMain.substring(
 						0,
 						dirnameIndex + 1,
@@ -420,7 +468,9 @@ namespace AMDLoader {
 
 			for (
 				let i = 0;
+
 				i < this.options.ignoreDuplicateModules.length;
+
 				i++
 			) {
 				this.ignoreDuplicateModulesMap[
@@ -433,6 +483,7 @@ namespace AMDLoader {
 			// Create an array our of the paths rules, sorted descending by length to
 			// result in a more specific -> less specific order
 			this.sortedPathsRules = [];
+
 			Utilities.forEachProperty(
 				this.options.paths,
 				(from: string, to: any) => {
@@ -449,6 +500,7 @@ namespace AMDLoader {
 					}
 				},
 			);
+
 			this.sortedPathsRules.sort((a, b) => {
 				return b.from.length - a.from.length;
 			});
@@ -491,9 +543,11 @@ namespace AMDLoader {
 								moduleId.substr(pathRule.from.length),
 						);
 					}
+
 					return result;
 				}
 			}
+
 			return [moduleId];
 		}
 
@@ -509,6 +563,7 @@ namespace AMDLoader {
 			if (this.options.urlArgs) {
 				return this._addUrlArgsToUrl(url);
 			}
+
 			return url;
 		}
 
@@ -518,6 +573,7 @@ namespace AMDLoader {
 					urls[i] = this._addUrlArgsToUrl(urls[i]);
 				}
 			}
+
 			return urls;
 		}
 
@@ -580,6 +636,7 @@ namespace AMDLoader {
 				) {
 					result = result + ".js";
 				}
+
 				results = [result];
 			}
 
@@ -619,12 +676,14 @@ namespace AMDLoader {
 			if (Utilities.isAnonymousModule(strModuleId)) {
 				return true;
 			}
+
 			if (
 				this.options.buildForceInvokeFactory &&
 				this.options.buildForceInvokeFactory[strModuleId]
 			) {
 				return true;
 			}
+
 			return false;
 		}
 

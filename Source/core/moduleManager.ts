@@ -18,7 +18,9 @@ namespace AMDLoader {
 
 	export interface IDefineCall {
 		stack: string | null;
+
 		dependencies: string[];
+
 		callback: any;
 	}
 
@@ -29,17 +31,21 @@ namespace AMDLoader {
 			errorback?: (error: Error) => void,
 		): void;
 		(dependency: string): any;
+
 		toUrl(id: string): string;
 
 		getStats(): LoaderEvent[];
+
 		hasDependencyCycle(): boolean;
 
 		getChecksums(): { [scriptSrc: string]: string };
+
 		config(params: IConfigurationOptions, shouldOverwrite?: boolean): void;
 	}
 
 	export interface IPluginLoadCallback {
 		(value: any): void;
+
 		error(err: any): void;
 	}
 
@@ -47,6 +53,7 @@ namespace AMDLoader {
 		(contents: string): void;
 
 		getEntryPoint(): string;
+
 		asModule(moduleId: string, contents: string): void;
 	}
 
@@ -54,6 +61,7 @@ namespace AMDLoader {
 		(filename: string, contents: string): void;
 
 		getEntryPoint(): string;
+
 		asModule(moduleId: string, contents: string): void;
 	}
 
@@ -134,20 +142,28 @@ namespace AMDLoader {
 	// Module
 	export class Module {
 		public readonly id: ModuleId;
+
 		public readonly strId: string;
+
 		public readonly dependencies: Dependency[] | null;
 
 		private readonly _callback: any | null;
+
 		private readonly _errorback:
 			| ((err: AnnotatedError) => void)
 			| null
 			| undefined;
+
 		public readonly moduleIdResolver: ModuleIdResolver | null;
 
 		public exports: any;
+
 		public error: AnnotatedError | null;
+
 		public exportsPassedIn: boolean;
+
 		public unresolvedDependenciesCount: number;
+
 		private _isComplete: boolean;
 
 		constructor(
@@ -159,15 +175,25 @@ namespace AMDLoader {
 			moduleIdResolver: ModuleIdResolver | null,
 		) {
 			this.id = id;
+
 			this.strId = strId;
+
 			this.dependencies = dependencies;
+
 			this._callback = callback;
+
 			this._errorback = errorback;
+
 			this.moduleIdResolver = moduleIdResolver;
+
 			this.exports = {};
+
 			this.error = null;
+
 			this.exportsPassedIn = false;
+
 			this.unresolvedDependenciesCount = this.dependencies.length;
+
 			this._isComplete = false;
 		}
 
@@ -234,7 +260,9 @@ namespace AMDLoader {
 						this._callback,
 						dependenciesValues,
 					);
+
 					producedError = r.producedError;
+
 					recorder.record(
 						LoaderEventType.EndInvokeFactory,
 						this.strId,
@@ -255,10 +283,15 @@ namespace AMDLoader {
 
 			if (producedError) {
 				let err = ensureError<AnnotatedFactoryError>(producedError);
+
 				err.phase = "factory";
+
 				err.moduleId = this.strId;
+
 				err.neededBy = inversedependenciesProvider(this.id);
+
 				this.error = err;
+
 				config.onError(err);
 			}
 
@@ -273,6 +306,7 @@ namespace AMDLoader {
 		 */
 		public onDependencyError(err: AnnotatedError): boolean {
 			this._isComplete = true;
+
 			this.error = err;
 
 			if (this._errorback) {
@@ -280,6 +314,7 @@ namespace AMDLoader {
 
 				return true;
 			}
+
 			return false;
 		}
 
@@ -296,14 +331,19 @@ namespace AMDLoader {
 
 	export interface IPosition {
 		line: number;
+
 		col: number;
 	}
 
 	export interface IBuildModuleInfo {
 		id: string;
+
 		path: string | null;
+
 		defineLocation: IPosition | null;
+
 		dependencies: string[];
+
 		shim: string | null;
 
 		exports: any;
@@ -317,17 +357,23 @@ namespace AMDLoader {
 
 	class ModuleIdProvider {
 		private _nextId: number;
+
 		private _strModuleIdToIntModuleId: Map<string, ModuleId>;
+
 		private _intModuleIdToStrModuleId: string[];
 
 		constructor() {
 			this._nextId = 0;
+
 			this._strModuleIdToIntModuleId = new Map<string, ModuleId>();
+
 			this._intModuleIdToStrModuleId = [];
 
 			// Ensure values 0, 1, 2 are assigned accordingly with ModuleId
 			this.getModuleId("exports");
+
 			this.getModuleId("module");
+
 			this.getModuleId("require");
 		}
 
@@ -340,9 +386,12 @@ namespace AMDLoader {
 
 			if (typeof id === "undefined") {
 				id = this._nextId++;
+
 				this._strModuleIdToIntModuleId.set(strModuleId, id);
+
 				this._intModuleIdToStrModuleId[id] = strModuleId;
 			}
+
 			return id;
 		}
 
@@ -353,7 +402,9 @@ namespace AMDLoader {
 
 	export class RegularDependency {
 		public static EXPORTS = new RegularDependency(ModuleId.EXPORTS);
+
 		public static MODULE = new RegularDependency(ModuleId.MODULE);
+
 		public static REQUIRE = new RegularDependency(ModuleId.REQUIRE);
 
 		public readonly id: ModuleId;
@@ -365,12 +416,16 @@ namespace AMDLoader {
 
 	export class PluginDependency {
 		public readonly id: ModuleId;
+
 		public readonly pluginId: ModuleId;
+
 		public readonly pluginParam: string;
 
 		constructor(id: ModuleId, pluginId: ModuleId, pluginParam: string) {
 			this.id = id;
+
 			this.pluginId = pluginId;
+
 			this.pluginParam = pluginParam;
 		}
 	}
@@ -379,13 +434,19 @@ namespace AMDLoader {
 
 	export class ModuleManager {
 		private readonly _env: Environment;
+
 		private readonly _scriptLoader: IScriptLoader;
+
 		private readonly _loaderAvailableTimestamp: number;
+
 		private readonly _defineFunc: IDefineFunc;
+
 		private readonly _requireFunc: IRequireFunc | null;
 
 		private _moduleIdProvider: ModuleIdProvider;
+
 		private _config: Configuration;
+
 		private _hasDependencyCycle: boolean;
 
 		/**
@@ -421,7 +482,9 @@ namespace AMDLoader {
 		private _recorder: ILoaderEventRecorder | null;
 
 		private _buildInfoPath: string[];
+
 		private _buildInfoDefineStack: (string | null)[];
+
 		private _buildInfoDependencies: string[][];
 
 		constructor(
@@ -432,25 +495,40 @@ namespace AMDLoader {
 			loaderAvailableTimestamp: number = 0,
 		) {
 			this._env = env;
+
 			this._scriptLoader = scriptLoader;
+
 			this._loaderAvailableTimestamp = loaderAvailableTimestamp;
+
 			this._defineFunc = defineFunc;
+
 			this._requireFunc = requireFunc;
+
 			this._moduleIdProvider = new ModuleIdProvider();
+
 			this._config = new Configuration(this._env);
+
 			this._hasDependencyCycle = false;
+
 			this._modules2 = [];
+
 			this._knownModules2 = [];
+
 			this._inverseDependencies2 = [];
+
 			this._inversePluginDependencies2 = new Map<
 				ModuleId,
 				PluginDependency[]
 			>();
+
 			this._currentAnonymousDefineCall = null;
 
 			this._recorder = null;
+
 			this._buildInfoPath = [];
+
 			this._buildInfoDefineStack = [];
+
 			this._buildInfoDependencies = [];
 
 			if (this._requireFunc) {
@@ -502,6 +580,7 @@ namespace AMDLoader {
 					);
 
 					stackPath = stackPath.substr(trimPathOffset);
+
 					stackPath = normalize(stackPath);
 
 					if (stackPath === normalizedPath) {
@@ -514,6 +593,7 @@ namespace AMDLoader {
 							r.col -=
 								"(function (require, define, __filename, __dirname) { ".length;
 						}
+
 						return r;
 					}
 				}
@@ -544,6 +624,7 @@ namespace AMDLoader {
 				let defineStack = this._buildInfoDefineStack[m.id] || null;
 
 				let dependencies = this._buildInfoDependencies[m.id];
+
 				result[resultLen++] = {
 					id: m.strId,
 					path: location,
@@ -559,6 +640,7 @@ namespace AMDLoader {
 					exports: m.exports,
 				};
 			}
+
 			return result;
 		}
 
@@ -572,6 +654,7 @@ namespace AMDLoader {
 					this._recorder = NullLoaderEventRecorder.INSTANCE;
 				}
 			}
+
 			return this._recorder;
 		}
 
@@ -593,11 +676,13 @@ namespace AMDLoader {
 					"Can only have one anonymous define call per script file",
 				);
 			}
+
 			let stack: string | null = null;
 
 			if (this._config.isBuild()) {
 				stack = new Error("StackLocation").stack || null;
 			}
+
 			this._currentAnonymousDefineCall = {
 				stack: stack,
 				dependencies: dependencies,
@@ -641,10 +726,12 @@ namespace AMDLoader {
 				errorback,
 				moduleIdResolver,
 			);
+
 			this._modules2[moduleId] = m;
 
 			if (this._config.isBuild()) {
 				this._buildInfoDefineStack[moduleId] = stack;
+
 				this._buildInfoDependencies[moduleId] = (
 					m.dependencies || []
 				).map((dep) => this._moduleIdProvider.getStrModuleId(dep.id));
@@ -662,9 +749,11 @@ namespace AMDLoader {
 			if (dependency === "exports") {
 				return RegularDependency.EXPORTS;
 			}
+
 			if (dependency === "module") {
 				return RegularDependency.MODULE;
 			}
+
 			if (dependency === "require") {
 				return RegularDependency.REQUIRE;
 			}
@@ -713,6 +802,7 @@ namespace AMDLoader {
 					moduleIdResolver,
 				);
 			}
+
 			return result;
 		}
 
@@ -761,6 +851,7 @@ namespace AMDLoader {
 						"'. This is the first mention of this module!",
 				);
 			}
+
 			if (!m.isComplete()) {
 				throw new Error(
 					"Check dependency list! Synchronous require cannot resolve module '" +
@@ -768,9 +859,11 @@ namespace AMDLoader {
 						"'. This module has not been resolved completely yet.",
 				);
 			}
+
 			if (m.error) {
 				throw m.error;
 			}
+
 			return m.exports;
 		}
 
@@ -785,6 +878,7 @@ namespace AMDLoader {
 			} else {
 				this._config = this._config.cloneAndMerge(params);
 			}
+
 			if (this._config.shouldRecordStats() && !oldShouldRecordStats) {
 				this._recorder = null;
 			}
@@ -801,6 +895,7 @@ namespace AMDLoader {
 		private _onLoad(moduleId: ModuleId): void {
 			if (this._currentAnonymousDefineCall !== null) {
 				let defineCall = this._currentAnonymousDefineCall;
+
 				this._currentAnonymousDefineCall = null;
 
 				// Hit an anonymous define call
@@ -826,8 +921,11 @@ namespace AMDLoader {
 			);
 
 			const err = ensureError<AnnotatedLoadingError>(_err);
+
 			err.phase = "loading";
+
 			err.moduleId = strModuleId;
+
 			err.neededBy = neededBy;
 
 			return err;
@@ -856,16 +954,20 @@ namespace AMDLoader {
 
 			for (
 				let i = 0, len = this._moduleIdProvider.getMaxModuleId();
+
 				i < len;
+
 				i++
 			) {
 				seenModuleId[i] = false;
 			}
+
 			let someoneNotified = false;
 
 			let queue: ModuleId[] = [];
 
 			queue.push(moduleId);
+
 			seenModuleId[moduleId] = true;
 
 			while (queue.length > 0) {
@@ -886,6 +988,7 @@ namespace AMDLoader {
 
 						if (!seenModuleId[inverseDep]) {
 							queue.push(inverseDep);
+
 							seenModuleId[inverseDep] = true;
 						}
 					}
@@ -914,15 +1017,19 @@ namespace AMDLoader {
 
 			for (
 				let i = 0, len = this._moduleIdProvider.getMaxModuleId();
+
 				i < len;
+
 				i++
 			) {
 				inQueue[i] = false;
 			}
+
 			let queue: Module[] = [];
 
 			// Insert 'from' in queue
 			queue.push(from);
+
 			inQueue[fromId] = true;
 
 			while (queue.length > 0) {
@@ -946,6 +1053,7 @@ namespace AMDLoader {
 						if (dependencyModule && !inQueue[dependency.id]) {
 							// Insert 'dependency' in queue
 							inQueue[dependency.id] = true;
+
 							queue.push(dependencyModule);
 						}
 					}
@@ -1017,17 +1125,21 @@ namespace AMDLoader {
 					errorback,
 				);
 			});
+
 			result.toUrl = (id: string) => {
 				return this._config.requireToUrl(
 					moduleIdResolver.resolveModule(id),
 				);
 			};
+
 			result.getStats = () => {
 				return this.getLoaderEvents();
 			};
+
 			result.hasDependencyCycle = () => {
 				return this._hasDependencyCycle;
 			};
+
 			result.config = (
 				params: IConfigurationOptions,
 				shouldOverwrite: boolean = false,
@@ -1044,6 +1156,7 @@ namespace AMDLoader {
 				// known module
 				return;
 			}
+
 			this._knownModules2[moduleId] = true;
 
 			let strModuleId = this._moduleIdProvider.getStrModuleId(moduleId);
@@ -1074,6 +1187,7 @@ namespace AMDLoader {
 
 					if (this._config.isBuild() && currentPath === "empty:") {
 						this._buildInfoPath[moduleId] = currentPath;
+
 						this.defineModule(
 							this._moduleIdProvider.getStrModuleId(moduleId),
 							[],
@@ -1081,6 +1195,7 @@ namespace AMDLoader {
 							null,
 							null,
 						);
+
 						this._onLoad(moduleId);
 
 						return;
@@ -1090,6 +1205,7 @@ namespace AMDLoader {
 						LoaderEventType.BeginLoadingScript,
 						currentPath,
 					);
+
 					this._scriptLoader.load(
 						this,
 						currentPath,
@@ -1097,10 +1213,12 @@ namespace AMDLoader {
 							if (this._config.isBuild()) {
 								this._buildInfoPath[moduleId] = currentPath;
 							}
+
 							recorder.record(
 								LoaderEventType.EndLoadingScriptOK,
 								currentPath,
 							);
+
 							this._onLoad(moduleId);
 						},
 						(err) => {
@@ -1108,6 +1226,7 @@ namespace AMDLoader {
 								LoaderEventType.EndLoadingScriptError,
 								currentPath,
 							);
+
 							loadNextPath(err);
 						},
 					);
@@ -1134,6 +1253,7 @@ namespace AMDLoader {
 				// known module
 				return;
 			}
+
 			this._knownModules2[pluginDependency.id] = true;
 
 			// Delegate the loading of the resource to the plugin
@@ -1146,6 +1266,7 @@ namespace AMDLoader {
 					null,
 				);
 			});
+
 			load.error = (err: any) => {
 				this._config.onError(
 					this._createLoadError(pluginDependency.id, err),
@@ -1172,6 +1293,7 @@ namespace AMDLoader {
 
 					if (dependency === RegularDependency.EXPORTS) {
 						module.exportsPassedIn = true;
+
 						module.unresolvedDependenciesCount--;
 
 						continue;
@@ -1197,6 +1319,7 @@ namespace AMDLoader {
 
 							return;
 						}
+
 						module.unresolvedDependenciesCount--;
 
 						continue;
@@ -1204,6 +1327,7 @@ namespace AMDLoader {
 
 					if (this._hasDependencyPath(dependency.id, module.id)) {
 						this._hasDependencyCycle = true;
+
 						console.warn(
 							"There is a dependency cycle between '" +
 								this._moduleIdProvider.getStrModuleId(
@@ -1219,8 +1343,11 @@ namespace AMDLoader {
 						let cyclePath =
 							this._findCyclePath(dependency.id, module.id, 0) ||
 							[];
+
 						cyclePath.reverse();
+
 						cyclePath.push(dependency.id);
+
 						console.warn(
 							cyclePath
 								.map((id) =>
@@ -1238,6 +1365,7 @@ namespace AMDLoader {
 					// record inverse dependency
 					this._inverseDependencies2[dependency.id] =
 						this._inverseDependencies2[dependency.id] || [];
+
 					this._inverseDependencies2[dependency.id]!.push(module.id);
 
 					if (dependency instanceof PluginDependency) {
@@ -1260,6 +1388,7 @@ namespace AMDLoader {
 
 						if (!inversePluginDeps) {
 							inversePluginDeps = [];
+
 							this._inversePluginDependencies2.set(
 								dependency.pluginId,
 								inversePluginDeps,
@@ -1353,6 +1482,7 @@ namespace AMDLoader {
 
 			// Fetch and clear inverse dependencies
 			let inverseDeps = this._inverseDependencies2[module.id];
+
 			this._inverseDependencies2[module.id] = null;
 
 			if (inverseDeps) {
@@ -1362,6 +1492,7 @@ namespace AMDLoader {
 					let inverseDependencyId = inverseDeps[i];
 
 					let inverseDependency = this._modules2[inverseDependencyId];
+
 					inverseDependency.unresolvedDependenciesCount--;
 
 					if (inverseDependency.unresolvedDependenciesCount === 0) {

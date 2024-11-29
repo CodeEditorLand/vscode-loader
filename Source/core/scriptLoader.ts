@@ -10,6 +10,7 @@ namespace AMDLoader {
 		getGlobalAMDRequireFunc(): IRequireFunc;
 
 		getConfig(): Configuration;
+
 		enqueueDefineAnonymousModule(
 			dependencies: string[],
 			callback: any,
@@ -42,6 +43,7 @@ namespace AMDLoader {
 
 	interface IScriptCallbacks {
 		callback: () => void;
+
 		errorback: (err: any) => void;
 	}
 
@@ -50,14 +52,18 @@ namespace AMDLoader {
 	 */
 	class OnlyOnceScriptLoader implements IScriptLoader {
 		private readonly _env: Environment;
+
 		private _scriptLoader: IScriptLoader | null;
+
 		private readonly _callbackMap: {
 			[scriptSrc: string]: IScriptCallbacks[];
 		};
 
 		constructor(env: Environment) {
 			this._env = env;
+
 			this._scriptLoader = null;
+
 			this._callbackMap = {};
 		}
 
@@ -86,6 +92,7 @@ namespace AMDLoader {
 					this._scriptLoader = new BrowserScriptLoader();
 				}
 			}
+
 			let scriptCallbacks: IScriptCallbacks = {
 				callback: callback,
 				errorback: errorback,
@@ -96,7 +103,9 @@ namespace AMDLoader {
 
 				return;
 			}
+
 			this._callbackMap[scriptSrc] = [scriptCallbacks];
+
 			this._scriptLoader.load(
 				moduleManager,
 				scriptSrc,
@@ -107,6 +116,7 @@ namespace AMDLoader {
 
 		private triggerCallback(scriptSrc: string): void {
 			let scriptCallbacks = this._callbackMap[scriptSrc];
+
 			delete this._callbackMap[scriptSrc];
 
 			for (let i = 0; i < scriptCallbacks.length; i++) {
@@ -116,6 +126,7 @@ namespace AMDLoader {
 
 		private triggerErrorback(scriptSrc: string, err: any): void {
 			let scriptCallbacks = this._callbackMap[scriptSrc];
+
 			delete this._callbackMap[scriptSrc];
 
 			for (let i = 0; i < scriptCallbacks.length; i++) {
@@ -136,20 +147,24 @@ namespace AMDLoader {
 		): void {
 			let unbind = () => {
 				script.removeEventListener("load", loadEventListener);
+
 				script.removeEventListener("error", errorEventListener);
 			};
 
 			let loadEventListener = (e: any) => {
 				unbind();
+
 				callback();
 			};
 
 			let errorEventListener = (e: any) => {
 				unbind();
+
 				errorback(e);
 			};
 
 			script.addEventListener("load", loadEventListener);
+
 			script.addEventListener("error", errorEventListener);
 		}
 
@@ -183,10 +198,13 @@ namespace AMDLoader {
 					[],
 					() => moduleExports,
 				);
+
 				callback();
 			} else {
 				let script = document.createElement("script");
+
 				script.setAttribute("async", "async");
+
 				script.setAttribute("type", "text/javascript");
 
 				this.attachListeners(script, callback, errorback);
@@ -198,6 +216,7 @@ namespace AMDLoader {
 				if (trustedTypesPolicy) {
 					scriptSrc = trustedTypesPolicy.createScriptURL(scriptSrc);
 				}
+
 				script.setAttribute("src", scriptSrc);
 
 				// Propagate CSP nonce to dynamically created script tag.
@@ -238,6 +257,7 @@ namespace AMDLoader {
 			if (this._cachedCanUseEval === null) {
 				this._cachedCanUseEval = canUseEval(moduleManager);
 			}
+
 			return this._cachedCanUseEval;
 		}
 
@@ -266,9 +286,11 @@ namespace AMDLoader {
 
 					return;
 				}
+
 				moduleManager.enqueueDefineAnonymousModule([], function () {
 					return moduleExports;
 				});
+
 				callback();
 			} else {
 				const { trustedTypesPolicy } = moduleManager
@@ -287,6 +309,7 @@ namespace AMDLoader {
 							if (response.status !== 200) {
 								throw new Error(response.statusText);
 							}
+
 							return response.text();
 						})
 						.then((text) => {
@@ -301,6 +324,7 @@ namespace AMDLoader {
 									)
 								: new Function(text); // CodeQL [SM01632] the loader is responsible with loading code, fetch + eval is used on the web worker instead of importScripts if possible because importScripts is synchronous and we observed deadlocks on Safari
 							func.call(self);
+
 							callback();
 						})
 						.then(undefined, errorback);
@@ -313,7 +337,9 @@ namespace AMDLoader {
 						scriptSrc =
 							trustedTypesPolicy.createScriptURL(scriptSrc);
 					}
+
 					importScripts(scriptSrc);
+
 					callback();
 				} catch (e) {
 					errorback(e);
@@ -324,13 +350,21 @@ namespace AMDLoader {
 
 	declare class Buffer {
 		static from(value: string, encoding?: string): Buffer;
+
 		static allocUnsafe(size: number): Buffer;
+
 		static concat(buffers: Buffer[], totalLength?: number): Buffer;
+
 		length: number;
+
 		writeInt32BE(value: number, offset: number);
+
 		readInt32BE(offset: number);
+
 		slice(start?: number, end?: number): Buffer;
+
 		equals(b: Buffer): boolean;
+
 		toString(): string;
 	}
 
@@ -340,29 +374,38 @@ namespace AMDLoader {
 			options: { encoding?: string; flag?: string },
 			callback: (err: any, data: any) => void,
 		): void;
+
 		readFile(
 			filename: string,
 			callback: (err: any, data: Buffer) => void,
 		): void;
+
 		readFileSync(filename: string): Buffer;
+
 		writeFile(
 			filename: string,
 			data: Buffer,
 			callback: (err: any) => void,
 		): void;
+
 		unlink(path: string, callback: (err: any) => void): void;
 	}
 
 	interface INodeVMScriptOptions {
 		filename: string;
+
 		cachedData?: Buffer;
 	}
 
 	interface INodeVMScript {
 		cachedData: Buffer;
+
 		cachedDataProduced: boolean;
+
 		cachedDataRejected: boolean;
+
 		runInThisContext(options: INodeVMScriptOptions);
+
 		createCachedData(): Buffer;
 	}
 
@@ -377,38 +420,53 @@ namespace AMDLoader {
 
 	interface INodePath {
 		dirname(filename: string): string;
+
 		normalize(filename: string): string;
+
 		basename(filename: string): string;
+
 		join(...parts: string[]): string;
 	}
 
 	interface INodeCryptoHash {
 		update(str: string, encoding: string): INodeCryptoHash;
+
 		digest(type: string): string;
+
 		digest(): Buffer;
 	}
+
 	interface INodeCrypto {
 		createHash(type: string): INodeCryptoHash;
 	}
 
 	class NodeScriptLoader implements IScriptLoader {
 		private static _BOM = 0xfeff;
+
 		private static _PREFIX =
 			"(function (require, define, __filename, __dirname) { ";
+
 		private static _SUFFIX = "\n});";
 
 		private readonly _env: Environment;
 
 		private _didPatchNodeRequire: boolean;
+
 		private _didInitialize: boolean;
+
 		private _fs: INodeFS;
+
 		private _vm: INodeVM;
+
 		private _path: INodePath;
+
 		private _crypto: INodeCrypto;
 
 		constructor(env: Environment) {
 			this._env = env;
+
 			this._didInitialize = false;
+
 			this._didPatchNodeRequire = false;
 		}
 
@@ -416,12 +474,16 @@ namespace AMDLoader {
 			if (this._didInitialize) {
 				return;
 			}
+
 			this._didInitialize = true;
 
 			// capture node modules
 			this._fs = nodeRequire("fs");
+
 			this._vm = nodeRequire("vm");
+
 			this._path = nodeRequire("path");
+
 			this._crypto = nodeRequire("crypto");
 		}
 
@@ -440,9 +502,11 @@ namespace AMDLoader {
 			if (!nodeCachedData) {
 				return;
 			}
+
 			if (this._didPatchNodeRequire) {
 				return;
 			}
+
 			this._didPatchNodeRequire = true;
 
 			const that = this;
@@ -459,6 +523,7 @@ namespace AMDLoader {
 						// nothing
 					}
 				};
+
 				require.resolve = function resolve(request, options) {
 					return Module._resolveFilename(
 						request,
@@ -467,11 +532,15 @@ namespace AMDLoader {
 						options,
 					);
 				};
+
 				require.resolve.paths = function paths(request) {
 					return Module._resolveLookupPaths(request, mod);
 				};
+
 				require.main = process.mainModule;
+
 				require.extensions = Module._extensions;
+
 				require.cache = Module._cache;
 
 				return require;
@@ -498,8 +567,11 @@ namespace AMDLoader {
 
 				try {
 					const data = that._fs.readFileSync(cachedDataPath);
+
 					hashData = data.slice(0, 16);
+
 					options.cachedData = data.slice(16);
+
 					recorder.record(
 						LoaderEventType.CachedDataFound,
 						cachedDataPath,
@@ -510,6 +582,7 @@ namespace AMDLoader {
 						cachedDataPath,
 					);
 				}
+
 				const script = new that._vm.Script(scriptSource, options);
 
 				const compileWrapper = script.runInThisContext(options);
@@ -540,6 +613,7 @@ namespace AMDLoader {
 					!options.cachedData,
 					moduleManager,
 				);
+
 				that._verifyCachedData(
 					script,
 					scriptSource,
@@ -570,7 +644,9 @@ namespace AMDLoader {
 				function (c) {
 					return c;
 				};
+
 			this._init(nodeRequire);
+
 			this._initNodeRequire(nodeRequire, moduleManager);
 
 			let recorder = moduleManager.getRecorder();
@@ -592,6 +668,7 @@ namespace AMDLoader {
 					[],
 					() => moduleExports,
 				);
+
 				callback();
 			} else {
 				scriptSrc = Utilities.fileUriToFilePath(
@@ -667,6 +744,7 @@ namespace AMDLoader {
 							wantsCachedData && !cachedData,
 							moduleManager,
 						);
+
 						this._verifyCachedData(
 							script,
 							scriptSource,
@@ -687,6 +765,7 @@ namespace AMDLoader {
 			errorback: (err: any) => void,
 		): INodeVMScript {
 			const recorder = moduleManager.getRecorder();
+
 			recorder.record(
 				LoaderEventType.NodeBeginEvaluatingScript,
 				options.filename,
@@ -705,6 +784,7 @@ namespace AMDLoader {
 
 				return globalDefineFunc.apply(null, arguments);
 			};
+
 			localDefineFunc.amd = globalDefineFunc.amd;
 
 			ret.call(
@@ -737,6 +817,7 @@ namespace AMDLoader {
 			if (!this._env.isElectronRenderer) {
 				return path;
 			}
+
 			let driveLetterMatch = path.match(/^([a-z])\:(.*)/i);
 
 			if (driveLetterMatch) {
@@ -780,6 +861,7 @@ namespace AMDLoader {
 							LoaderEventType.CachedDataRejected,
 							cachedDataPath,
 						);
+
 					this._createAndWriteCachedData(
 						script,
 						scriptSource,
@@ -853,6 +935,7 @@ namespace AMDLoader {
 						}
 
 						lastSize = cachedData.length;
+
 						this._fs.writeFile(
 							cachedDataPath,
 							Buffer.concat([hashData, cachedData]),
@@ -860,12 +943,14 @@ namespace AMDLoader {
 								if (err) {
 									moduleManager.getConfig().onError(err);
 								}
+
 								moduleManager
 									.getRecorder()
 									.record(
 										LoaderEventType.CachedDataCreated,
 										cachedDataPath,
 									);
+
 								createLoop();
 							},
 						);
@@ -917,6 +1002,7 @@ namespace AMDLoader {
 					{ encoding: "utf8" },
 					(err: any, data: string) => {
 						source = data;
+
 						step(err);
 					},
 				);
@@ -924,7 +1010,9 @@ namespace AMDLoader {
 				this._fs.readFile(cachedDataPath, (err: any, data: Buffer) => {
 					if (!err && data && data.length > 0) {
 						hashData = data.slice(0, 16);
+
 						cachedData = data.slice(16);
+
 						recorder.record(
 							LoaderEventType.CachedDataFound,
 							cachedDataPath,
@@ -935,6 +1023,7 @@ namespace AMDLoader {
 							cachedDataPath,
 						);
 					}
+
 					step(); // ignored: cached data is optional
 				});
 			}
@@ -951,10 +1040,12 @@ namespace AMDLoader {
 				// nothing to do
 				return;
 			}
+
 			if (script.cachedDataRejected) {
 				// invalid anyways
 				return;
 			}
+
 			setTimeout(
 				() => {
 					// check source hash - the contract is that file paths change when file content
@@ -975,6 +1066,7 @@ namespace AMDLoader {
 									)
 								),
 							);
+
 						this._fs.unlink(cachedDataPath!, (err) => {
 							if (err) {
 								moduleManager.getConfig().onError(err);

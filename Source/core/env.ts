@@ -22,12 +22,18 @@ declare var module: {
 };
 declare var process: {
 	platform: string;
+
 	type: string;
+
 	mainModule: string;
+
 	arch: string;
+
 	argv: string[];
+
 	versions: {
 		node: string;
+
 		electron: string;
 	};
 };
@@ -43,10 +49,15 @@ namespace AMDLoader {
 
 	export class Environment {
 		private _detected: boolean;
+
 		private _isWindows: boolean;
+
 		private _isNode: boolean;
+
 		private _isElectronRenderer: boolean;
+
 		private _isWebWorker: boolean;
+
 		private _isElectronNodeIntegrationWebWorker;
 
 		public get isWindows(): boolean {
@@ -54,21 +65,25 @@ namespace AMDLoader {
 
 			return this._isWindows;
 		}
+
 		public get isNode(): boolean {
 			this._detect();
 
 			return this._isNode;
 		}
+
 		public get isElectronRenderer(): boolean {
 			this._detect();
 
 			return this._isElectronRenderer;
 		}
+
 		public get isWebWorker(): boolean {
 			this._detect();
 
 			return this._isWebWorker;
 		}
+
 		public get isElectronNodeIntegrationWebWorker(): boolean {
 			this._detect();
 
@@ -77,10 +92,15 @@ namespace AMDLoader {
 
 		constructor() {
 			this._detected = false;
+
 			this._isWindows = false;
+
 			this._isNode = false;
+
 			this._isElectronRenderer = false;
+
 			this._isWebWorker = false;
+
 			this._isElectronNodeIntegrationWebWorker = false;
 		}
 
@@ -88,15 +108,21 @@ namespace AMDLoader {
 			if (this._detected) {
 				return;
 			}
+
 			this._detected = true;
+
 			this._isWindows = Environment._isWindows();
+
 			this._isNode = typeof module !== "undefined" && !!module.exports;
+
 			this._isElectronRenderer =
 				typeof process !== "undefined" &&
 				typeof process.versions !== "undefined" &&
 				typeof process.versions.electron !== "undefined" &&
 				process.type === "renderer";
+
 			this._isWebWorker = typeof global.importScripts === "function";
+
 			this._isElectronNodeIntegrationWebWorker =
 				this._isWebWorker &&
 				typeof process !== "undefined" &&
@@ -114,9 +140,11 @@ namespace AMDLoader {
 					return true;
 				}
 			}
+
 			if (typeof process !== "undefined") {
 				return process.platform === "win32";
 			}
+
 			return false;
 		}
 	}

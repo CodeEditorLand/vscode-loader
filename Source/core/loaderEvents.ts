@@ -28,12 +28,16 @@ namespace AMDLoader {
 
 	export class LoaderEvent {
 		public type: LoaderEventType;
+
 		public timestamp: number;
+
 		public detail: string;
 
 		constructor(type: LoaderEventType, detail: string, timestamp: number) {
 			this.type = type;
+
 			this.detail = detail;
+
 			this.timestamp = timestamp;
 		}
 	}
