@@ -1,4 +1,5 @@
 {
+	"dependencies": {},
 	"description": "An universal AMD Loader",
 	"devDependencies": {
 		"yaserver": "0.4.0"
@@ -7,7 +8,7 @@
 		"test": "tests"
 	},
 	"main": "index.js",
-	"name": "@vscode/loader",
+	"name": "@codeeditorland/loader",
 	"scripts": {
 		"compile": "tsc -p src/core/tsconfig.json && tsc -p tsconfig.json",
 		"simpleserver": "yaserver --root ./ --port 9999",
