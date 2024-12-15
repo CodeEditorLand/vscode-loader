@@ -468,9 +468,7 @@ namespace AMDLoader {
 
 			for (
 				let i = 0;
-
 				i < this.options.ignoreDuplicateModules.length;
-
 				i++
 			) {
 				this.ignoreDuplicateModulesMap[

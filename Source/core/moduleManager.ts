@@ -954,9 +954,7 @@ namespace AMDLoader {
 
 			for (
 				let i = 0, len = this._moduleIdProvider.getMaxModuleId();
-
 				i < len;
-
 				i++
 			) {
 				seenModuleId[i] = false;
@@ -1017,9 +1015,7 @@ namespace AMDLoader {
 
 			for (
 				let i = 0, len = this._moduleIdProvider.getMaxModuleId();
-
 				i < len;
-
 				i++
 			) {
 				inQueue[i] = false;
